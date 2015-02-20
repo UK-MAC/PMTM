@@ -1,0 +1,24 @@
+# TEMPORARY SETTINGS OF CE VARIABLES
+PMTM_MACHINE_NAME    = $(HPC_SYSTEM)
+PMTM_MACHINE_VENDOR  = "WHO"
+PMTM_OS_VENDOR       = "WHO"
+PMTM_OS_NAME         = "WHAT"
+PMTM_OS_VERSION     := "NUMBER"
+PMTM_OS_KERNEL      := "${shell uname -r}"
+PMTM_PROC_VENDOR    := "WHO"
+PMTM_PROC_NAME      := "WHAT"
+PMTM_PROC_ARCH      := "WHAT"
+PMTM_PROC_CLOCK     := "SPEED"
+PMTM_PROC_CORES     := "NUMBER"
+PMTM_PROC_THREADS   := "NUMBER"
+
+
+MPI_RUN = mpirun.awe
+MPI_NPS = -np # space required
+
+
+PFUNIT_DIR = 
+
+#F2C Utility for adding or removing underscores for C - Fortran linking
+F2C_DIR = 
+F2C_INC = $(INC) $(F2C_DIR)

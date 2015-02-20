@@ -22,6 +22,8 @@
 #include <float.h>
 #include <limits.h>
 #include <stdarg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -138,6 +140,7 @@ void pmtm_warn(const char * message, ...)
         fflush(stderr);
     }
 }
+
 
 /**
  * Set a library option.
@@ -817,6 +820,7 @@ PMTM_error_t construct_timer_group(
 
     group->num_timers = 0;
     group->timer_ids = NULL;
+    group->total_timers = 0;
 
     return PMTM_SUCCESS;
 }
@@ -846,6 +850,8 @@ void destruct_timer_group(struct PMTM_timer_group * group)
  * @param timer      [IN] The timer to construct, the memory for which should
  *                        already be allocated.
  * @param timer_name [IN] The name of the timer, or NULL if the timer is already named.
+ *                        Do not specify timer_name to this if this timer might be part of
+ *                        a thread group and already active.
  * @param timer_type [IN] The type of the timer, e.g. PMTM_TIMER_MAX.
  * @returns PMTM_SUCCESS if successful, or one of PMTM_ERROR_* codes if not.
  */
@@ -986,7 +992,7 @@ void finalize()
 
     timer_head = NULL;
     timer_tail = &timer_head;
-    
+    timer_count = 0;
 }
 
 
@@ -1149,6 +1155,8 @@ PMTM_timer_t new_timer(struct PMTM_timer_group * group, const char * timer_name)
         *id = NULL;
         ++(group->num_timers);
     }
+
+    ++(group->total_timers);
 
     // Insert the new entry into the timer_ids list.
 
@@ -1913,30 +1921,39 @@ void move_output_file( const struct PMTM_instance * instance )
 //     char * pmtm_file_store = NULL;
 // //     size_t len = 0;
 //  
-    if(pmtm_file_store == NULL) pmtm_file_store = getenv("PMTM_DATA_STORE");
-    
-    if ( pmtm_file_store != NULL && stat(pmtm_file_store) < 0 && pmtm_file_store[0] != '\0' && no_stored_copy == PMTM_FALSE) {
-	char * sysname = QUOTE(SYSTEM_NAME);
-	char now[20];
-	time_t timer = time(NULL);
-	struct tm * tm_ptr = localtime(&timer);
-	strftime(now,20, "%Y%m%d-%H%M%S", tm_ptr) ;
-	char num_procs[20];
-	sprintf(num_procs,"%d",instance->nranks);
-	
-	char * newfilename = malloc(strlen(instance->file_name) + strlen(sysname) + 10 + strlen(now) + strlen(num_procs) + 6);
-	
-	sprintf(newfilename,"%.*s_%s_%010d_%s_%sp.pmtm",(int) strlen(instance->file_name)-5,instance->file_name,sysname,getpid(),now,num_procs);
-	//printf("%s\n",newfilename);
-	char * destination = malloc(strlen(pmtm_file_store) + strlen(newfilename) + 2);
-	strcpy(destination,pmtm_file_store);
-	strcat(destination,"/");
-	strcat(destination,newfilename);
-// 	printf("%s\n",destination);
-	char * copy_command = malloc(strlen(instance->file_name) + strlen(destination) + 5);
-	sprintf(copy_command,"cp %s %s",instance->file_name,destination);
-	system(copy_command);
-	
+
+    struct stat buf;
+
+    if (pmtm_file_store == NULL)
+        pmtm_file_store = getenv("PMTM_DATA_STORE");
+
+    if (pmtm_file_store != NULL && pmtm_file_store[0] != '\0' && no_stored_copy == PMTM_FALSE) {
+        struct stat buf;
+        int status = stat(pmtm_file_store, &buf);
+
+        if (status == 0 && (buf.st_mode & S_IFDIR)) {
+            char * sysname = QUOTE(SYSTEM_NAME);
+            char now[20];
+            time_t timer = time(NULL);
+            struct tm * tm_ptr = localtime(&timer);
+            strftime(now,20, "%Y%m%d-%H%M%S", tm_ptr) ;
+            char num_procs[20];
+            sprintf(num_procs,"%d",instance->nranks);
+
+            char * newfilename = malloc(strlen(instance->file_name) + strlen(sysname) + 10 + strlen(now) + strlen(num_procs) + 6);
+            sprintf(newfilename,"%.*s_%s_%010d_%s_%sp.pmtm",(int) strlen(instance->file_name)-5,instance->file_name,sysname,getpid(),now,num_procs);
+            //printf("%s\n",newfilename);
+
+            char * destination = malloc(strlen(pmtm_file_store) + strlen(newfilename) + 2);
+            strcpy(destination,pmtm_file_store);
+            strcat(destination,"/");
+            strcat(destination,newfilename);
+            // 	printf("%s\n",destination);
+
+            char * copy_command = malloc(strlen(instance->file_name) + strlen(destination) + 5);
+            sprintf(copy_command,"cp %s %s",instance->file_name,destination);
+            system(copy_command);
+        }
     }
 //     else {
 // 	setenv("PMTM_KEEP_LOCAL_COPY","1",1);

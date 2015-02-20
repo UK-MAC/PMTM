@@ -10,6 +10,10 @@
 #ifndef _PMTM_INCLUDE_PMTM_INTERNAL_H
 #define	_PMTM_INCLUDE_PMTM_INTERNAL_H
 
+#ifndef SERIAL
+#  include "mpi.h"
+#endif
+
 #include "timers.h"
 #include "pmtm.h"
 
@@ -27,6 +31,7 @@ extern "C" {
 #define FAILED_ARRAY_ADD -1
 #define FAILED_TIMER_ADD ((PMTM_timer_t) -1)
 #define IO_RANK 0
+
 
 extern char ** environ;
 
@@ -98,7 +103,8 @@ struct PMTM_timer_group
     struct PMTM_instance * instance; /**< The instance to which this group is associated. */
     char * group_name;               /**< The name of the timer group. */
     size_t num_timers;               /**< The number of timers in the timer_ids array. */
-    struct PMTM_timer ** timer_ids;  /**< The timers associated with this timer group. */
+    struct PMTM_timer ** timer_ids;  /**< The timers associated with this timer group. Threaded timers will only carry one entry for the set. */
+    size_t total_timers;             /**< The total number of timers represented by the group. All timers in thread groups are counted in this figure. */
 };
 
 /**
@@ -208,6 +214,7 @@ struct parameter * new_parameter(struct PMTM_instance * instance);
 
 /** @name Output functions
  @{ */
+PMTM_error_t PMTM_internal_timer_output(struct PMTM_instance * instance, MPI_Comm PMTM_COMM);
 PMTM_BOOL check_parameter(struct PMTM_instance * instance, const char * parameter_name, const char * parameter_value, PMTM_output_type_t output_type, int * count);
 void print_parameter_array(struct PMTM_instance * instance, const char * parameter_name, const char * parameter_values, int num_values, int * displacements);
 void print_timer(const struct PMTM_instance * instance, struct PMTM_timer * timer);

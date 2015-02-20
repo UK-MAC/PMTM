@@ -1,0 +1,82 @@
+###############################################################################
+# This Make include file specifies all the Compiler specific variables required
+# by the Benchmark CD. It is included via the Makefile.include file.
+#
+# This is the Makefile that was used during compilation of the benchmark CD on
+# AWE systems using the PGI compilers version 10.8.0.
+#
+# See Makefile.include for meanings of the variables.
+###############################################################################
+
+# Compilers:
+CC  = pgcc
+FC  = pgf90
+CXX = pgcpp
+AR  = ar
+
+PMTM_COMPILER_VENDOR  = "STMicroelectronics"
+PMTM_COMPILER_NAME    = "PGI"
+PMTM_COMPILER_VERSION = "10.8.0"
+
+REAL4    = -r4
+REAL8    = -r8
+INTEGER4 = -i4
+INTEGER8 = -i8
+
+# Version flags:
+FCVERSION = $(FC) -V | head -n 2 | tail -n 1
+CCVERSION = $(MPICC) -V  | head -n 2 | tail -n 1
+
+# Linker flags:
+LFLAGS    = 
+L_debug   = -g -traceback
+L_opt     = -O2
+L_highopt = -O4
+
+# Fortran flags:
+FFLAGS    =
+FFREE     = -Mfree
+FFIXED    = -Mfixed
+FBYTESWAP = -byteswapio
+FMODDIR   = -module 
+FPPF      = -Mpreprocess
+FPPf      = -Mpreprocess
+FDEF      = -D
+FUNDEF    = -U
+FFPIC     = -fpic
+FINLINE   = -Minline
+FBOUNDS   = -C
+FSTDLIBS  = $(LIB)pgf90 $(LIB)pgf902 $(LIB)pgf90rtl $(LIB)pgf90_rpm1 \
+            $(LIB)pgf90_rpm1_p $(LIB)pgftnrtl $(LIB)rt
+FSHARED   = -shared
+FIEEE     = -Kieee
+FFP_CONST = $(FIEEE) -Mdaz
+F2C_NAMING = F2C_UNDERSCORE
+F_debug    = -g
+F_opt     = -fastsse
+F_highopt = -O4 -fastsse $(FINLINE)
+
+# C flags:
+CFLAGS    =
+CFPIC     = -fpic
+CSTATIC   = -Bstatic
+CINLINE   = -Minline
+CDEF      = -D
+CUNDEF    = -U
+C_debug   = -g
+C_opt     = -O2
+C_highopt = -O4
+
+# C++ flags:
+CXXFLAGS          =
+CXXDEPENDENCY     = -MM
+CXXPREINCLUDE_MPI = --preinclude "mpi.h"
+CXXLFLAGS         =
+CXXSTDLIBS        = $(LIB)std $(LIB)C
+CXX_debug         = -g
+CXX_opt           = -O2
+CXX_highopt       = -O4
+
+# Misc compiler dependent options:
+
+###############################################################################

@@ -1,0 +1,124 @@
+###############################################################################
+# This Make include file specifies all the Compiler specific variables required
+# by the Benchmark CD. It is included via the Makefile.include file.
+#
+# This is the Makefile that was used during compilation of the benchmark CD on
+# AWE systems using the Intel compilers version 11.1.
+#
+# See Makefile.include for meanings of the variables.
+###############################################################################
+
+# Compilers:
+CC  = icc
+FC  = ifort
+CXX = icpc
+AR  = xiar
+
+PMTM_COMPILER_VENDOR  = "Intel"
+PMTM_COMPILER_NAME    = "Intel"
+PMTM_COMPILER_VERSION = "${shell icc -V 2>&1 | sed -n 's/.*Version \([0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?\).*/\1/p'}"
+
+REAL4    = -r4
+REAL8    = -r8
+INTEGER4 = -i4
+INTEGER8 = -i8
+
+# Version flags:
+FCVERSION = $(FC) --version | head -n 1
+CCVERSION = $(MPICC) --version | head -n 1
+
+# Build options:
+opt           = -O2 #-profile-functions -profile-loops=all
+fileopt       = -O2
+sse           = -O2 -xSSE4.2 #-profile-functions -profile-loops=all
+avx           = -O2 -xAVX #-profile-functions -profile-loops=all
+avx_novec     = -O2 -xAVX -no-vec #-profile-functions -profile-loops=all
+highopt       = -O3 #-profile-functions -profile-loops=all
+highsse       = -O3 -xSSE4.2 #-profile-functions -profile-loops=all
+highavx       = -O3 -xAVX #-profile-functions -profile-loops=all
+highavx_novec = -O3 -xAVX -no-vec #-profile-functions -profile-loops=all
+debug         = -g -O2
+
+# Linker flags:
+LFLAGS           =
+L_opt           := $(opt)
+L_fileopt       := $(fileopt)
+L_sse           := $(sse)
+L_avx           := $(avx)
+L_avx_novec     := $(avx_novec)
+L_highopt       := $(highopt)
+L_highsse       := $(highsse)
+L_highavx       := $(highavx)
+L_highavx_novec := $(highavx_novec)
+L_debug         := $(debug)
+
+# Fortran flags:
+FFLAGS        = -heap-arrays 64
+FFREE         = -free
+FFIXED        = -fixed
+FBYTESWAP     =
+FMODDIR       = -module # trailing space is required
+FPPF          = -cpp
+FPPf          = -cpp
+FDEF          = -D
+FUNDEF        = -U
+FFPIC         = -fpic
+FINLINE       =
+FFPE_TRAP     = -fpe0
+FBOUNDS       = -check all
+FSTDLIBS      = $(LIB)ifcore $(LIB)ifport $(LIB)irc
+FSHARED       = -shared
+FIEEE         = -fp-model strict -fp-model source -prec-div -prec-sqrt
+FFP_CONST     = -fltconsistency -no-ftz
+F2C_NAMING    = F2C_UNDERSCORE
+F_opt        := $(opt)
+F_fileopt    := $(fileopt)
+F_sse        := $(sse)
+F_avx        := $(avx)
+F_avx_novec  := $(avx_novec)
+F_highopt       := $(highopt)
+F_highsse       := $(highsse)
+F_highavx       := $(highavx)
+F_highavx_novec := $(highavx_novec)
+F_debug         := $(debug)
+
+# C flags:
+CFLAGS        =
+CINLINE       = -inline-level=2
+CFPIC         = -fpic
+CSTATIC       = -static
+CDEF          = -D
+CUNDEF        = -U
+C_opt        := $(opt)
+C_fileopt    := $(fileopt)
+C_sse        := $(sse)
+C_avx        := $(avx)
+C_avx_novec  := $(avx_novec)
+C_highopt       := $(highopt)
+C_highsse       := $(highsse)
+C_highavx       := $(highavx)
+C_highavx_novec := $(highavx_novec)
+C_debug         := $(debug)
+
+# C++ flags:
+CXXFLAGS          =
+CXXDEPENDENCY     = -M
+CXXPREINCLUDE_MPI =
+CXXLFLAGS         =
+CXXSTDLIBS        = $(LIB)stdc++
+CXX_opt           := $(opt)
+CXX_fileopt       := $(fileopt)
+CXX_sse           := $(sse)
+CXX_avx           := $(avx)
+CXX_avx_novec     := $(avx_novec)
+CXX_highopt       := $(highopt)
+CXX_highsse       := $(highsse)
+CXX_highavx       := $(highavx)
+CXX_highavx_novec := $(highavx_novec)
+CXX_debug         := $(debug)
+
+# Misc compiler dependent options:
+
+PFUNIT_DEFINES = $(FDEF)STRINGIFY_OPERATOR $(FDEF)Intel
+
+###############################################################################

@@ -11,7 +11,7 @@
 #define	_PMTM_INCLUDE_PMTM_WRAPPER_H
 
 #include "pmtm.h"
-#include "pmtm_internal.h"
+// #include "pmtm_internal.h"
 #include "f2c.h"
 
 #ifdef	__cplusplus

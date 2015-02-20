@@ -1,0 +1,80 @@
+###############################################################################
+# This Make include file specifies all the Compiler specific variables required
+# by the Benchmark CD. It is included via the Makefile.include file.
+#
+# This is the Makefile that was used during compilation of the benchmark CD on
+# AWE systems using the GNU compiler collective version 4.3.2.
+#
+# See Makefile.include for meanings of the variables.
+###############################################################################
+
+# Compilers:
+CC  = gcc
+FC  = gfortran
+CXX = g++
+
+PMTM_COMPILER_VENDOR   = "GNU"
+PMTM_COMPILER_NAME     = "GCC"
+PMTM_COMPILER_VERSION := $(shell gcc --version | head -n 1 | cut -d ' ' -f 3)
+
+REAL    = -fdefault-real-8
+REAL8   = -fdefault-real-8
+INTEGER4 =
+INTEGER8 = -fdefault-integer-8
+
+# Version flags:
+FCVERSION = $(FC) --version | head -n 1
+CCVERSION = $(MPICC) --version | head -n 1
+
+# Linker flags:
+LFLAGS        =
+L_debug       = -g
+L_opt         = -O2
+L_highopt     = -O4
+
+# Fortran flags:
+FFLAGS                 =
+FFREE                  = -ffree-form -ffree-line-length-0
+FFIXED                 = -ffixed-form
+FBYTESWAP              =
+FMODDIR                = -J
+FPPF                   = -x f95-cpp-input
+FPPf                   = -x f95-cpp-input
+FDEF                   = -D
+FUNDEF                 = -U
+FFPIC                  = -fpic
+FINLINE                =
+FBOUNDS                = -C
+FSTDLIBS               = $(LIB)gfortran
+FCALL                  = $(CDEF)FCALL_PREFIX=__$(MODULE_NAME)_MOD_ $(CDEF)STRLENS_AT_END
+FSHARED                = -shared
+FIEEE                  =
+FFP_CONST              =
+F_debug                = -g
+F_opt                  = -O2
+F_highopt              = -O4
+
+# C flags:
+CFLAGS        =
+CFPIC         = -fpic
+CSTATIC       = -static
+CDEF          = -D
+CUNDEF        = -U
+C_debug       = -g
+C_opt         = -O2
+C_highopt     = -O4
+
+# C++ flags:
+CXXFLAGS          =
+CXXDEPENDENCY     = -MM
+CXXPREINCLUDE_MPI =
+CXXLFLAGS         =
+CXX_debug         = -g
+CXX_opt           = -O2
+CXX_highopt       = -O4
+
+# Misc compiler dependent options:
+
+PFUNIT_DEFINES = $(FDEF)STRINGIFY_QUOTE $(FDEF)G95
+
+###############################################################################

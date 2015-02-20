@@ -19,6 +19,7 @@
 
 #include <math.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 #ifdef HW_COUNTERS
 #  include "hardware_counters.h"
@@ -66,6 +67,8 @@ PMTM_error_t PMTM_init(
 
     PMTM_instance_t id = new_instance();
     if (id < 0) {
+        // This error code should be shared between all ranks, so the situation doesn't occur of one
+        // aborting and not the others. If MPI isn't working all bets are off really...
         return PMTM_ERROR_CREATE_INSTANCE_FAILED;
     }
 
@@ -87,11 +90,33 @@ PMTM_error_t PMTM_init(
 #endif
 
     PMTM_error_t err_code;
-    err_code = construct_instance(get_instance(PMTM_DEFAULT_INSTANCE), file_name, app_name, rank, nranks);
+    struct PMTM_instance * instance = get_instance(PMTM_DEFAULT_INSTANCE);
+    err_code = construct_instance(instance, file_name, app_name, rank, nranks);
+
+    // Andy - bug currently. There seems to be a number of reasons that ranks can destruct their instance
+    // and or report error codes. Currently they can end up a bit inconsistent if this occurs. I think it
+    // needs a review throughout, but basically I think once an instance is up it should stay up no matter
+    // what happens. set_file for example can destruct the instance in the IO_RANK. Here we will make sure
+    // to destruct all ranks or none and put an error into all ranks.
 
 #ifndef SERIAL
-    /* Ensure all procs know about any errors. */
-    MPI_Bcast(&err_code, 1, MPI_INT, IO_RANK, PMTM_COMM);
+    int local_destruct = (instance->initialised ? 0 : 1), global_destruct;
+    MPI_Allreduce(&local_destruct, &global_destruct, 1, MPI_INT, MPI_SUM, PMTM_COMM);
+
+    if (global_destruct > 0) {
+         destruct_instance(instance);
+
+         // Get the I/O ranks error code, if it is set use that otherwise if we don't have
+         // one send the not initialised error. Should probably really lock step this a bit.
+         // Allocate everything - confirm - create file - confirm or decide on a priority of
+         // reporting...
+
+         PMTM_error_t io_err_code = err_code;
+         MPI_Bcast(&io_err_code, 1, MPI_INT, IO_RANK, PMTM_COMM);
+
+         if (io_err_code != PMTM_SUCCESS) err_code = io_err_code;
+         if (err_code == PMTM_SUCCESS) err_code = PMTM_ERROR_NOT_INITIALISED;
+    }
 #endif
 
     return err_code;
@@ -732,138 +757,18 @@ PMTM_error_t PMTM_parameter_output(
  * @returns PMTM_SUCCESS if successful, or one of PMTM_ERROR_* codes if not.
  */
 
-// The previous version used a collective to bring the data together but instead
-// this uses sends and recvs since in the threaded version the amount of data can
-// vary per rank, although it probably won't for most HPC applications. I'm not
-// sure the impact of this in the big scheme of things or whether some tree
-// scheme would be needed in very large cases. Still, I guess just see what
-// happens for big cases. The recvs are done in order, as the only way to
-// guarantee anything with MPI is to have a unique rank or tag specified. If
-// not, it is easy for early arriving rank data to get considered as relevant.
-
 PMTM_error_t PMTM_timer_output(PMTM_instance_t instance_id)
 {
+
+    // No need to check for individual abort here. All ranks are expected to do this in
+    // sync.
+
     struct PMTM_instance * instance = get_instance(instance_id);
     if (instance == NULL || instance->initialised == 0) {
         return PMTM_ERROR_INVALID_INSTANCE_ID;
     }
 
-    uint group_idx;
-    uint timer_idx;
-    
-    for (group_idx = 0; group_idx < instance->num_groups; ++group_idx) {
-        PMTM_timer_group_t group_id = instance->group_ids[group_idx];
-        struct PMTM_timer_group * group = get_timer_group(group_id);
-
-        for (timer_idx = 0; timer_idx < group->num_timers; ++timer_idx) {
-            struct PMTM_timer * timer = group->timer_ids[timer_idx];
-
-            if (!timer->is_printed) {
-#ifdef PMTM_DEBUG
-                if (timer->state != TIMER_STOPPED) {
-                    const char * this_state = get_state_desc(timer->state);
-                    const char * good_state = get_state_desc(TIMER_STOPPED);
-                    pmtm_warn("Requested wallclock time on timer %s that was in state %s, timer must be in %s state",
-                            timer->timer_name, this_state, good_state);
-                    return PMTM_ERROR_BAD_OUTPUT;
-                }
-#endif
-                uint threadcount = 1;
-                struct PMTM_timer * local_timers;
-#ifdef _OPENMP
-                struct PMTM_timer * tim = timer->thread_next;
-
-                while (tim != NULL) {
-                    tim = tim->thread_next;
-                    threadcount++;
-                }
-
-                local_timers = calloc(sizeof(struct PMTM_timer), threadcount);
-                int inserted = 0;
-                tim = timer;
-
-                while (tim != NULL) {
-                    local_timers[inserted] = *tim;
-                    local_timers[inserted].rank = instance->rank;
-                    inserted++;
-                    tim->is_printed = 1;
-                    tim = tim->thread_next;
-                }
-#else
-                local_timers = timer;
-		local_timers->rank = instance->rank;
-#endif
-
-                uint totalthreads = 0;
-                uint * all_threadcounts;
-                struct PMTM_timer * all_timers;
-
-#ifndef SERIAL
-                if (instance->rank == IO_RANK)
-                    all_threadcounts = calloc(sizeof(uint), instance->nranks+1);
-
-                MPI_Gather(&threadcount, 1, MPI_INT,
-                           all_threadcounts, 1, MPI_INT,
-                           IO_RANK, PMTM_COMM);
-
-                if (instance->rank != IO_RANK) {
-                    MPI_Send(local_timers, threadcount*sizeof(struct PMTM_timer), MPI_BYTE,
-                             IO_RANK, 0, PMTM_COMM);
-
-                } else {
-                    uint r, maxthreads = 0;
-
-                    for (r = 0; r < instance->nranks; r++) {
-                        uint threads = all_threadcounts[r];
-                        if (threads > maxthreads) maxthreads = threads;
-                        all_threadcounts[r] = totalthreads;
-                        totalthreads = totalthreads + threads;
-                    }
-
-                    all_threadcounts[instance->nranks] = totalthreads;
-
-                    all_timers = calloc(sizeof(struct PMTM_timer), totalthreads);
-                    memcpy(all_timers + all_threadcounts[IO_RANK], local_timers, threadcount*sizeof(struct PMTM_timer));
-
-                    for (r = 0; r < instance->nranks; r++) {
-                        if (r != IO_RANK) {
-                            uint offset = all_threadcounts[r];
-                            uint size = all_threadcounts[r+1] - offset;
-
-                            MPI_Recv(all_timers + offset, size*sizeof(struct PMTM_timer), MPI_BYTE,
-                                     r, 0, PMTM_COMM, MPI_STATUS_IGNORE);
-                        }
-                    }
-                }
-#else
-                totalthreads = threadcount;
-                all_threadcounts = &totalthreads;
-                all_timers = local_timers;
-#endif
-                uint t;
-
-                for (t = 0; t < totalthreads; ++t) {
-                    all_timers[t].timer_name = timer->timer_name;
-                }
-                
-                if (instance->rank == IO_RANK) {
-                    print_timer_array(instance, totalthreads, all_timers, timer->timer_name, timer->timer_type);
-                }
-
-#ifdef _OPENMP
-                free(local_timers);
-#endif
-#ifndef SERIAL
-                if (instance->rank == IO_RANK) {
-                    free(all_threadcounts);
-                    free(all_timers);
-                }
-#endif
-            }
-        }
-    }
-
-    return PMTM_SUCCESS;
+    return PMTM_internal_timer_output(instance, PMTM_COMM);
 }
 
 /**
