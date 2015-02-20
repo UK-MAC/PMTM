@@ -1,0 +1,110 @@
+##################################################################################
+# This Makefile.COMMON include file specifies all the Compiler specific variables.
+#
+# This is the Makefile that was used during compilation of the Ichnaea PMTM libray
+# using the Intel compilers version 11.1. Change the appropriate variables if you
+# need to use a different compiler.
+#
+##################################################################################
+
+LIBDIR = -L
+LIB = -l
+INC = -I
+
+# Compilers:
+CC  = icc
+FC  = ifort
+CXX = icpc
+AR  = xiar
+
+MPIFC  = mpif90
+MPICC  = mpicc
+MPICXX = mpicxx
+
+PMTM_MPI_VENDOR  := "Intel"
+PMTM_MPI_NAME    := "IntelMPI"
+PMTM_MPI_VERSION := "4.0.0"
+
+PMTM_COMPILER_VENDOR  = "Intel"
+PMTM_COMPILER_NAME    = "Intel"
+PMTM_COMPILER_VERSION = "${shell icc -V 2>&1 | sed -n 's/.*Version \([0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?\).*/\1/p'}"
+
+REAL4    = -r4
+REAL8    = -r8
+INTEGER4 = -i4
+INTEGER8 = -i8
+
+# Version flags:
+FCVERSION = $(FC) --version | head -n 1
+CCVERSION = $(MPICC) --version | head -n 1
+
+# Build options:
+opt           = -O2 
+debug         = -g -O2
+
+# Linker flags:    
+LFLAGS           = $(debug)
+
+# Fortran flags:
+FFLAGS        = -heap-arrays 64 $(debug) 
+FFREE         = -free 
+FFIXED        = -fixed 
+FBYTESWAP     = 
+FMODDIR       = -module # trailing space is required
+FPPF          = -cpp
+FPPf          = -cpp
+FDEF          = -D
+FUNDEF        = -U
+FFPIC         = -fpic
+FINLINE       =
+FFPE_TRAP     = -fpe0
+FBOUNDS       = -check all
+FSTDLIBS      = $(LIB)ifcore $(LIB)ifport $(LIB)irc
+FSHARED       = -shared
+FIEEE         = -fp-model strict -fp-model source -prec-div -prec-sqrt
+FFP_CONST     = -fltconsistency -no-ftz
+F2C_NAMING    = F2C_UNDERSCORE
+
+# C flags:
+CFLAGS        = $(debug)
+CINLINE       = -inline-level=2
+CFPIC         = -fpic
+CSTATIC       = -static
+CDEF          = -D
+CUNDEF        = -U
+
+# C++ flags:
+CXXFLAGS          = $(debug)
+CXXDEPENDENCY     = -M
+CXXPREINCLUDE_MPI =
+CXXLFLAGS         =
+CXXSTDLIBS        = $(LIB)stdc++
+
+PFUNIT_DEFINES = $(FDEF)STRINGIFY_OPERATOR $(FDEF)Intel
+
+
+LD = $(MPIFC)
+
+# SYSTEM LIBRARIES - CHANGES THESE TO REPRESENT YOUR SYSTEM
+############################################################
+
+PMTM_MACHINE_VENDOR := "MACHINE_VENDOR" 
+PMTM_MACHINE_NAME   := "MACHINE_NAME"
+
+PMTM_OS_VENDOR  := "OS_VENDOR"
+PMTM_OS_NAME    := "OS_NAME"
+PMTM_OS_VERSION := "OS_VERSION"
+PMTM_OS_KERNEL  := "OS_KERNEL"
+
+PMTM_PROC_VENDOR    := "PROC_VENDOR"
+PMTM_PROC_NAME      := "PROC_NAME"
+PMTM_PROC_ARCH      := "PROC_ARCH"
+PMTM_PROC_CLOCK     := "PROC_CLOCK"
+PMTM_PROC_CORES     := "PROC_CORES"
+PMTM_PROC_THREADS   := "PROC_THREADS"
+
+MPI_RUN = mpirun
+MPI_NPS = -np 
+
+
+PFUNIT_DIR = # Replace this with the full path to pFUnit directory

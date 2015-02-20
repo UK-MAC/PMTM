@@ -1,0 +1,37 @@
+
+[pmtm]
+
+# -- PMTM config for: %SYSTEM%, %COMPILER%, %MPI%
+# -----------------------------------------------------------------------------
+
+VERSION      = %VERSION%
+
+SVN_URL      = %SVN_URL%
+SVN_REVISION = %SVN_REV%
+
+DATE         = %DATE%
+
+# -- HPC Common Environment:
+
+HPC_SYSTEM   = %SYSTEM%
+HPC_ARCH     = %ARCH%
+HPC_COMPILER = %COMPILER%
+HPC_MPI      = %MPI%
+
+# -- Paths:
+
+SRC_DIR      = %SRC_DIR%
+BUILD_DIR    = %BUILD_DIR%
+
+# -- Compiler options:
+
+CC           = %CC%
+CC_VERSION   = %CC_VERSION%
+CFLAGS       = %CFLAGS%
+
+FC           = %FC%
+FC_VERSION   = %FC_VERSION%
+FFLAGS       = %FFLAGS%
+
+F2C_DIR      = %F2C_DIR%
+F2C_DEF      = %F2C_DEF%
