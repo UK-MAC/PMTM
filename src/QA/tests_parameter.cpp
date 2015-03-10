@@ -21,7 +21,12 @@ int main(int argc, char** argv)
     return run_tests(argc, argv);
 }
 
-TEST_CASE( "parameter/for_each_rank", "Ouputting a parameter with for_each_rank == TRUE should print the parameter on each rank" )
+/**
+ * @test <b>\c tests_parameter.cpp/for_each_rank</b>		Outputting a parameter with for_each_rank == TRUE should print the parameter on each rank
+ *
+ * Tests \ref PMTM_parameter_output when setting the parameter to output on all ranks
+ */
+TEST_CASE( "tests_parameter.cpp/for_each_rank", "Outputting a parameter with for_each_rank == TRUE should print the parameter on each rank" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 
@@ -43,7 +48,12 @@ TEST_CASE( "parameter/for_each_rank", "Ouputting a parameter with for_each_rank 
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "parameter/rank0_only", "Ouputting a parameter with for_each_rank == FALSE should print the parameter on rank0 only" )
+/**
+ * @test <b>\c tests_parameter.cpp/rank0_only</b>		Outputting a parameter with for_each_rank == FALSE should print the parameter on rank0 only
+ *
+ * Tests \ref PMTM_parameter_output when setting the parameter to only be output on rank 0
+ */
+TEST_CASE( "tests_parameter.cpp/rank0_only", "Outputting a parameter with for_each_rank == FALSE should print the parameter on rank0 only" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 
@@ -63,7 +73,13 @@ TEST_CASE( "parameter/rank0_only", "Ouputting a parameter with for_each_rank == 
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "parameter/output_types", "Should be able to output a variety of different parameter types using printf style notation" )
+/**
+ * @test <b>\c tests_parameter.cpp/output_types</b>		Should be able to output a variety of different parameter types using printf style notation
+ *
+ * Tests that \ref PMTM_parameter_output can handle all the different variable types and can use printf
+ *
+ */
+TEST_CASE( "tests_parameter.cpp/output_types", "Should be able to output a variety of different parameter types using printf style notation" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 
@@ -91,7 +107,13 @@ TEST_CASE( "parameter/output_types", "Should be able to output a variety of diff
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "parameter/output_once", "With the output once type the parameter should only be printed on the first call" )
+/**
+ * @test <b>\c tests_parameter.cpp/output_once</b>		With the output once type the parameter should only be printed on the first call
+ *
+ * Tests \ref PMTM_parameter_output only outputs on the first call when requested
+ *
+ */
+TEST_CASE( "tests_parameter.cpp/output_once", "With the output once type the parameter should only be printed on the first call" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 
@@ -113,7 +135,12 @@ TEST_CASE( "parameter/output_once", "With the output once type the parameter sho
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "parameter/output_on_change", "With the output on change type the parameter should only be printed if it changes between calls" )
+/**
+ * @test <b>\c tests_parameter.cpp/output_on_change</b>		With the output on change type the parameter should only be printed if it changes between calls
+ *
+ * Tests \ref PMTM_parameter_output will output only output when a variable changes when
+ */
+TEST_CASE( "tests_parameter.cpp/output_on_change", "With the output on change type the parameter should only be printed if it changes between calls" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 
@@ -140,7 +167,7 @@ TEST_CASE( "parameter/output_on_change", "With the output on change type the par
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "parameter/output_always", "With the output always type the parameter should always be printed" )
+TEST_CASE( "tests_parameter.cpp/output_always", "With the output always type the parameter should always be printed" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 

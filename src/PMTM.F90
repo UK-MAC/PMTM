@@ -86,6 +86,11 @@ module PMTM
 !! @param parameter_value The value to output
 !! @param err_code <b>(FORTRAN Only)</b> Will be set to \c PMTM_SUCCESS if the call was successful and the appropriate error code if not
 !!
+!! @test <b>\c tests_parameter.cpp/for_each_rank</b>        Outputting a parameter with for_each_rank == TRUE should print the parameter on each rank
+!! @test <b>\c tests_parameter.cpp/rank0_only</b>       Outputting a parameter with for_each_rank == FALSE should print the parameter on rank0 only
+!! @test <b>\c tests_parameter.cpp/output_types</b>     Should be able to output a variety of different parameter types using printf style notation
+!! @test <b>\c tests_parameter.cpp/output_once</b>      With the output once type the parameter should only be printed on the first call
+!!
 !! \b Notes: The \c C version of this routine takes a \c printf style format string argument, which is used to parse the parameter values at the end.
 !!
     interface PMTM_parameter_output
@@ -115,6 +120,9 @@ contains
 !! - \c PMTM_TRUE Set the option as true
 !! - \c PMTM_FALSE Set the option as false
 !! @param err_code <b>(FORTRAN Only)</b> Will be set to \c PMTM_SUCCESS if the call was successful and the appropriate error code if not
+!!
+!! @test <b>\c tests_options.cpp/output_env</b>     Turn of the output environment options should stop the environment being output to the PMTM output file
+!! @test <b>\c tests_options.cpp/from_pmtmrc_file</b>       Test whether putting a option pair in either VARIABLE VALUE or VARIABLE=VALUE form in .pmtmrc file results in change to option
 !!
 subroutine PMTM_set_option(option, value, err_code)
     implicit none
@@ -245,6 +253,9 @@ end subroutine PMTM_set_file_name
 !! @param instance The handle of the instance to write the variable to
 !! @param variable_name The Environment Variable to output to file
 !! @param err_code <b>(FORTRAN Only)</b> Will be set to \c PMTM_SUCCESS if the call was successful and the appropriate error code if not.
+!!
+!! @test <b>\c tests_options.cpp/get_specific_runtime_variables</b>     Test whether putting a specific Environment variable name in ${PWD}/.pmtmrc prints it to the output, but only once
+!! @test <b>\c tests_options.cpp/get_specific_runtime_variables_internal</b>    Test whether PMTM_output_specific_runtime_variable prints out the variable's value to the output
 !!
 subroutine PMTM_output_specific_runtime_variable(instance, variable_name, err_code)
     implicit none

@@ -21,7 +21,12 @@ int main(int argc, char** argv)
     return run_tests(argc, argv);
 }
 
-TEST_CASE( "options/output_env", "Turn of the output environment options should stop the environment being output to the PMTM output file" )
+/**
+ * @test <b>\c tests_options.cpp/output_env</b>		Turn of the output environment options should stop the environment being output to the PMTM output file
+ *
+ * Tests \ref PMTM_set_option using the PMTM_OPTION_OUTPUT_ENV flag
+ */
+TEST_CASE( "tests_options.cpp/output_env", "Turn of the output environment options should stop the environment being output to the PMTM output file" )
 {
     char * wc_command = "grep -c \"^Environ\" *.pmtm";
     
@@ -61,7 +66,12 @@ TEST_CASE( "options/output_env", "Turn of the output environment options should 
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "options/get_specific_runtime_variables", "Test whether putting a specific Environment variable name in ${PWD}/.pmtmrc prints it to the output, but only once")
+/**
+ * @test <b>\c tests_options.cpp/get_specific_runtime_variables</b>		Test whether putting a specific Environment variable name in ${PWD}/.pmtmrc prints it to the output, but only once
+ *
+ * Tests \ref PMTM_output_specific_runtime_variable when a variable is added to the .pmtmrc file
+ */
+TEST_CASE( "tests_options.cpp/get_specific_runtime_variables", "Test whether putting a specific Environment variable name in ${PWD}/.pmtmrc prints it to the output, but only once")
 {
     char * cf_command = "echo \"PMTM_TEST_SPEC_ENV\" > .pmtmrc";
     system(cf_command);
@@ -108,8 +118,12 @@ TEST_CASE( "options/get_specific_runtime_variables", "Test whether putting a spe
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-
-TEST_CASE( "options/get_specific_runtime_variables_internal", "Test whether PMTM_output_specific_runtime_variable prints out the variable's value to the output")
+/**
+ * @test <b>\c tests_options.cpp/get_specific_runtime_variables_internal</b>	Test whether PMTM_output_specific_runtime_variable prints out the variable's value to the output
+ *
+ * Tests \ref PMTM_output_specific_runtime_variable when called from within a host code
+ */
+TEST_CASE( "tests_options.cpp/get_specific_runtime_variables_internal", "Test whether PMTM_output_specific_runtime_variable prints out the variable's value to the output")
 {
     char * fs_command = "grep Specific *.pmtm | grep PMTM_TEST_SPEC_ENV_INTERNAL | wc -l";
     
@@ -135,8 +149,13 @@ TEST_CASE( "options/get_specific_runtime_variables_internal", "Test whether PMTM
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-
-TEST_CASE( "options/from_pmtmrc_file", "Test whether putting a option pair in either VARIABLE VALUE or VARIABLE=VALUE form in .pmtmrc file results in change to option")
+/**
+ * @test <b>\c tests_options.cpp/from_pmtmrc_file</b>		Test whether putting a option pair in either VARIABLE VALUE or VARIABLE=VALUE form in .pmtmrc file results in change to option
+ *
+ * Tests the use of \ref PMTM_set_option and also the internal option reader when a variable pair is set in a .pmtmrc file
+ *
+ */
+TEST_CASE( "tests_options.cpp/from_pmtmrc_file", "Test whether putting a option pair in either VARIABLE VALUE or VARIABLE=VALUE form in .pmtmrc file results in change to option")
 {
   
     FileDeleter file_deleter("test_timing_file_");

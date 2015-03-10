@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 }
 
 
-TEST_CASE( "threads/parallel_timing", "Timing a one second wait should return a time close to one second from each thread" )
+TEST_CASE( "tests_threads.cpp/parallel_timing", "Timing a one second wait should return a time close to one second from each thread" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 
