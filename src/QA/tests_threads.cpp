@@ -23,7 +23,12 @@ int main(int argc, char** argv)
     return run_tests(argc, argv);
 }
 
-
+/**
+ * @ingroup tests_thrds
+ * 
+ * Tests that using \c PMTM from within a threaded region produces correct timings on each thread timer.
+ * 
+ */
 TEST_CASE( "tests_threads.cpp/parallel_timing", "Timing a one second wait should return a time close to one second from each thread" )
 {
     PmtmWrapper pmtm("test_timing_file_");

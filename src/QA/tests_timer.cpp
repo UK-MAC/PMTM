@@ -21,6 +21,12 @@ int main(int argc, char** argv)
     return run_tests(argc, argv);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that correctly creating a new timer in the default timer group using \ref PMTM_create_timer returns a valid timer id (not -1)
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/create", "Creating a timer in the default timer group should return valid timer id" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -32,6 +38,12 @@ TEST_CASE( "tests_timer.cpp/create", "Creating a timer in the default timer grou
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that giving \ref PMTM_create_timer a timer name containing a comma prints out a timer name with the comma removed.
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/commas", "Creating a timer with a comma in its name should result in a timer with the comma stripped" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -51,6 +63,12 @@ TEST_CASE( "tests_timer.cpp/commas", "Creating a timer with a comma in its name 
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using the timer type \c PMTM_TIMER_NONE in \ref PMTM_create_timer results in only the rank information being printed
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timer_none", "With the timer none timer type only the times for each rank should be printed" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -75,6 +93,12 @@ TEST_CASE( "tests_timer.cpp/timer_none", "With the timer none timer type only th
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using the timer type \c PMTM_TIMER_MAX in \ref PMTM_create_timer results in only the rank information and maximum time being printed
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timer_max", "With the 'timer max' timer type the max time on the ranks should be printed along with the times from each rank" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -100,6 +124,12 @@ TEST_CASE( "tests_timer.cpp/timer_max", "With the 'timer max' timer type the max
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using the timer type \c PMTM_TIMER_MIN in \ref PMTM_create_timer results in only the rank information and the minimum time being printed
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timer_min", "With the 'timer min' timer type the min time on the ranks should be printed along with the times from each rank" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -125,6 +155,12 @@ TEST_CASE( "tests_timer.cpp/timer_min", "With the 'timer min' timer type the min
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using the timer type \c PMTM_TIMER_AVG in \ref PMTM_create_timer results in only the rank information and the overall average time being printed
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timer_avg", "With the 'timer avg' timer type the avg time on the ranks should be printed along with the times from each rank" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -150,6 +186,12 @@ TEST_CASE( "tests_timer.cpp/timer_avg", "With the 'timer avg' timer type the avg
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using the timer type \c PMTM_TIMER_ALL in \ref PMTM_create_timer results in the rank information, maximum, minimum and average times being printed
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timer_all", "With the 'timer all' timer type the different stats should be printed along with the times from each rank" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -177,6 +219,12 @@ TEST_CASE( "tests_timer.cpp/timer_all", "With the 'timer all' timer type the dif
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using the timer type \c PMTM_TIMER_INT in \ref PMTM_create_timer results in no timer information being printed
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timer_int", "With the 'timer int' timer type no timing information should be written to the file." )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -198,6 +246,12 @@ TEST_CASE( "tests_timer.cpp/timer_int", "With the 'timer int' timer type no timi
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using the timer type \c PMTM_TIMER_MMA in \ref PMTM_create_timer results in only maximum, minimum and average times being printed
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timer_mma", "With the 'timer mma' timer type only the Max, Min and Average timer stats should be printed not any rank information" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -222,6 +276,12 @@ TEST_CASE( "tests_timer.cpp/timer_mma", "With the 'timer mma' timer type only th
     MPI_Barrier(MPI_COMM_WORLD);
 } 
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using the timer type \c PMTM_TIMER_AVO in \ref PMTM_create_timer results in only the average time being printed
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timer_avo", "With the 'timer avo' timer type only the Average timer stats should be printed not any rank, max or min information." )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -244,6 +304,12 @@ TEST_CASE( "tests_timer.cpp/timer_avo", "With the 'timer avo' timer type only th
     MPI_Barrier(MPI_COMM_WORLD);
 } 
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that starting and stopping a timer using \ref PMTM_timer_start and \ref PMTM_timer_stop results in the timer's count being incremented
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/start_stop", "Starting and stopping a timer should increase that timer's count")
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -276,6 +342,12 @@ TEST_CASE( "tests_timer.cpp/start_stop", "Starting and stopping a timer should i
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests pausing and continuing a timer using the \ref PMTM_timer_pause and \ref PMTM_timer_continue functions results in the timer's pause count being incremented.
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/pause_continue", "Pausing and continuing a timer should increase that timer's pause count" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -311,6 +383,12 @@ TEST_CASE( "tests_timer.cpp/pause_continue", "Pausing and continuing a timer sho
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that timing a one second wait returns a time close to one second
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/timing", "Timing a one second wait should return a time close to one second" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -341,6 +419,12 @@ TEST_CASE( "tests_timer.cpp/timing", "Timing a one second wait should return a t
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using \ref PMTM_set_sample_mode to specify the sample frequency correctly enables \c PMTM to only sample at the required rate
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/sampling_frequency", "Specifying the sampling frequency should cause the timer to take measurements at that rate" )
 {
     PmtmWrapper pmtm("test_timing_file_");
@@ -376,6 +460,12 @@ TEST_CASE( "tests_timer.cpp/sampling_frequency", "Specifying the sampling freque
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_timer
+ * 
+ * Tests that using \ref PMTM_set_sample_mode to set the maximum number of samples should set \c PMTM to stop sampling after the required count is reached.
+ * 
+ */
 TEST_CASE( "tests_timer.cpp/sampling_maximum", "Specifying the maximum samples should cause the timer to stop sampling after that maximum" )
 {
     PmtmWrapper pmtm("test_timing_file_");

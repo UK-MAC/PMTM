@@ -1,6 +1,6 @@
 /** 
  * @file   pmtm.c
- * @author Hollocombe (Tessella plc)
+ * @author AWE Plc.
  * 
  * This file defines the working of the PMTM API. Most of the actually work is
  * performed in the pmtm_internal code with these functions forwarding on the

@@ -1,9 +1,3 @@
-###############################################################################
-# This Make include file specifies all the Compiler specific variables required
-# by the Benchmark CD. It is included via the Makefile.include file.
-#
-# This is the Makefile that was used during compilation of the benchmark CD on
-# AWE systems using the Intel compilers version 11.1.
 #
 # See Makefile.include for meanings of the variables.
 ###############################################################################
@@ -71,6 +65,7 @@ FSHARED       = -shared
 FIEEE         = -fp-model strict -fp-model source -prec-div -prec-sqrt
 FFP_CONST     = -fltconsistency -no-ftz
 F2C_NAMING    = F2C_UNDERSCORE
+FOPENMP       = -openmp
 F_opt        := $(opt)
 F_fileopt    := $(fileopt)
 F_sse        := $(sse)
@@ -89,6 +84,7 @@ CFPIC         = -fpic
 CSTATIC       = -static
 CDEF          = -D
 CUNDEF        = -U
+COPENMP       = -openmp
 C_opt        := $(opt)
 C_fileopt    := $(fileopt)
 C_sse        := $(sse)
@@ -106,6 +102,7 @@ CXXDEPENDENCY     = -M
 CXXPREINCLUDE_MPI =
 CXXLFLAGS         =
 CXXSTDLIBS        = $(LIB)stdc++
+CXXOPENMP         = -openmp
 CXX_opt           := $(opt)
 CXX_fileopt       := $(fileopt)
 CXX_sse           := $(sse)
@@ -117,8 +114,15 @@ CXX_highavx       := $(highavx)
 CXX_highavx_novec := $(highavx_novec)
 CXX_debug         := $(debug)
 
-# Misc compiler dependent options:
-
 PFUNIT_DEFINES = $(FDEF)STRINGIFY_OPERATOR $(FDEF)Intel
+
+# Corvus Pre-processor options:
+#####################################
+#
+# Delete the options below as needed, depending on maths libraries used:
+#
+#IBM_SETRTEOPTS  = -DIBM_SETRTEOPTS
+#IBM_ESSEL       = -DIBM_ESSEL
+INTEL_MKL       = -DINTEL_MKL
 
 ###############################################################################

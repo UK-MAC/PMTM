@@ -16,6 +16,39 @@
 extern "C" {
 #endif
 
+/**
+ * @page Error Error Codes 
+ *
+ * | Error Name | Value | Description | 
+ * | :----------| :---: | :---------- | 
+ * | PMTM_SUCCESS | 0 | Success value. \b Not an error code. |
+ * |  PMTM_ERROR_ALREADY_INITIALISED     | -1  | PMTM can only be initialised once. |
+ * |  PMTM_ERROR_NOT_INITIALISED         | -2  | PMTM must be initialised before any PMTM functions are used. |
+ * |  PMTM_ERROR_FAILED_ALLOCATION       | -3  | Memory allocation failure. |
+ * |  PMTM_ERROR_OVERWRITING_INSTANCE    | -4  | Attempting to overwrite a PMTM instance. |
+ * |  PMTM_ERROR_FILE_NAME_TOO_LONG      | -5  | Supplied file name was too long. |
+ * |  PMTM_ERROR_INVALID_INSTANCE_ID     | -6  | Unknown instance id passed to function. |
+ * |  PMTM_ERROR_INVALID_TIMER_GROUP_ID  | -7  | Unknown timer group id passed to function. |
+ * |  PMTM_ERROR_INVALID_TIMER_ID        | -8  | Unknown timer id passed to function. | 
+ * |  PMTM_ERROR_CREATE_INSTANCE_FAILED  | -9  | Failed to create PMTM instance. |
+ * |  PMTM_ERROR_CREATE_GROUP_FAILED     | -10 | Failed to create timer group. |
+ * |  PMTM_ERROR_CREATE_TIMER_FAILED     | -11 | Failed to create timer. |
+ * |  PMTM_ERROR_BAD_START               | -12 | Start called on timer that was not stopped. |
+ * |  PMTM_ERROR_BAD_STOP                | -13 | Stop called on timer that was not running. |
+ * |  PMTM_ERROR_BAD_PAUSE               | -14 | Pause called on timer that was not running. |
+ * |  PMTM_ERROR_BAD_CONTINUE            | -15 | Continue called on timer that was not paused. |
+ * |  PMTM_ERROR_CANNOT_CREATE_FILE      | -16 | Failed to create PMTM output file. |
+ * |  PMTM_ERROR_BAD_OUTPUT              | -17 | Output called on timer that was not stopped. |
+ * |  PMTM_ERROR_MPI_NOT_INITIALISED     | -18 | MPI must be initialised before PMTM. |
+ * |  PMTM_ERROR_MPI_COMM_RANK_FAILED    | -19 | MPI error whilst getting comm rank. |
+ * |  PMTM_ERROR_MPI_COMM_SIZE_FAILED    | -20 | MPI error whilst getting comm size. |
+ * |  PMTM_ERROR_MPI_GATHER_FAILED       | -21 | MPI error whilst performing gather across ranks. |
+ * |  PMTM_ERROR_TOO_MANY_FLAGS          | -22 | Too many flags have been given to \ref PMTM_log_flags, not all of them will be output. |
+ * |  PMTM_ERROR_MPI_COMM_DUP_FAILED     | -23 | MPI error whilst duplicating communicator. |
+ * |  PMTM_ERROR_HW_COUNTERS_INIT_FAILED | -24 | Error whilst trying to initialise hardware counters. |
+ * |  PMTM_ERROR_HW_COUNTERS_READ_FAILED | -25 | Error whilst trying to read hardware counters. |
+ * |  PMTM_ERROR_UNKNOWN_OPTION          | -26 | Unknown PMTM Error - Should never return this. |
+ @{ */
 #define PMTM_SUCCESS                        0
 #define PMTM_ERROR_ALREADY_INITIALISED     -1
 #define PMTM_ERROR_NOT_INITIALISED         -2
@@ -43,6 +76,7 @@ extern "C" {
 #define PMTM_ERROR_HW_COUNTERS_INIT_FAILED -24
 #define PMTM_ERROR_HW_COUNTERS_READ_FAILED -25
 #define PMTM_ERROR_UNKNOWN_OPTION          -26
+/* @} */
 
 #ifdef __cplusplus
 typedef bool PMTM_BOOL;

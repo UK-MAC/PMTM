@@ -1,9 +1,3 @@
-###############################################################################
-# This Make include file specifies all the Compiler specific variables required
-# by the Benchmark CD. It is included via the Makefile.include file.
-#
-# This is the Makefile that was used during compilation of the benchmark CD on
-# AWE systems using the GNU compiler collective version 4.3.2.
 #
 # See Makefile.include for meanings of the variables.
 ###############################################################################
@@ -50,6 +44,7 @@ FCALL                  = $(CDEF)FCALL_PREFIX=__$(MODULE_NAME)_MOD_ $(CDEF)STRLEN
 FSHARED                = -shared
 FIEEE                  =
 FFP_CONST              =
+FOPENMP                = -fopenmp
 F_debug                = -g
 F_opt                  = -O2
 F_highopt              = -O4
@@ -60,6 +55,7 @@ CFPIC         = -fpic
 CSTATIC       = -static
 CDEF          = -D
 CUNDEF        = -U
+COPENMP       = -fopenmp
 C_debug       = -g
 C_opt         = -O2
 C_highopt     = -O4
@@ -69,11 +65,10 @@ CXXFLAGS          =
 CXXDEPENDENCY     = -MM
 CXXPREINCLUDE_MPI =
 CXXLFLAGS         =
+CXXOPENMP         = -fopenmp
 CXX_debug         = -g
 CXX_opt           = -O2
 CXX_highopt       = -O4
-
-# Misc compiler dependent options:
 
 PFUNIT_DEFINES = $(FDEF)STRINGIFY_QUOTE $(FDEF)G95
 

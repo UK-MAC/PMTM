@@ -25,8 +25,9 @@
 #                                                                             #
 ###############################################################################
 
-BUILD_DIR ?= $(HOME)/PMTM/build
-OUT_DIR   ?= $(HOME)/PMTM
+BUILD_DIR ?= ${HOME}/pmtm_${VERSION}
+OUT_DIR   ?= ${HOME}/PMTM/${VERSION}
+INSTALL_DIR ?= ${OUT_DIR}
 ifdef LOCAL
   SUB_DIR = $(HPC_SYSTEM)/$(HPC_COMPILER)/$(HPC_MPI)
 endif
@@ -67,7 +68,8 @@ LIB_OBJS_SO_OMP = $(LIB_OBJS:%.o=%_picomp.o)
 CHEADERS    = pmtm.h
 FMODULES    = $(FULL_BUILD_DIR)/pmtm.mod
 
-TEST_EXES   = $(FULL_BUILD_DIR)/QA/tests_finalize.x \
+TEST_EXES   = $(OMP_TEST_EXES) \
+	      $(FULL_BUILD_DIR)/QA/tests_finalize.x \
 	      $(FULL_BUILD_DIR)/QA/tests_initialize.x \
 	      $(FULL_BUILD_DIR)/QA/tests_options.x \
 	      $(FULL_BUILD_DIR)/QA/tests_parameter.x \
@@ -121,13 +123,21 @@ ifndef MPIRUN
   MPIRUN=mpirun.awe
 endif
 
+F2C_OPT=$(F2C_NAMING)
+
 NOW=`date +%F-%H%M%S`
 RESULTSDIR=$(HOME)/PMTM/QA_RESULTS/$(VERSION)
-RESULTSFILE="$(RESULTSDIR)/$(HPC_SYSTEM)-$(HPC_COMPILER)-$(HPC_MPI)_$(NOW).results"
+RESULTSFILE="$(RESULTSDIR)/$(HPC_CLUSTER)-$(HPC_COMPILER)-$(HPC_MPI)_$(NOW).results"
+RESULTSAGNO=$(RESULTSDIR)/$(HPC_CLUSTER)-$(HPC_COMPILER)-$(HPC_MPI)_*.results
 
 -include $(FULL_BUILD_DIR)/F2C_conf
 
 all: $(FULL_BUILD_DIR) lib config
+	@ echo "Setting permisions..."
+	@ FILES=`find $(PMTM_LIBDIR) -name "*.a" -or -name "*.so"`; \
+	  if [ -n "$$FILES" ]; then chmod 644 $$FILES; fi
+	@ FILES=`find $(PMTM_INCDIR) -name "*.h" -or -name "*.mod"`; \
+	  if [ -n "$$FILES" ]; then chmod 644 $$FILES; fi
 	
 #LD_LIBRARY_PATH=$(PMTM_LIBDIR):$$LD_LIBRARY_PATH $(MPI_RUN) $(MPI_NPS)4 ./tests.x;
 test: FFLAGS += $(FDEBUG)
@@ -147,7 +157,12 @@ test: $(TEST_EXES) $(FULL_BUILD_DIR)/QA/ftests.x
 	    then \
 		for t in $(TEST_EXES); \
 		do \
-			$(MPI_RUN) $(MPI_NPS)4 $$t; \
+			if [ "$$t" == "$(OMP_TEST_EXES)" ]; \
+			then \
+			    OMP_NUM_THREADS=4 $(MPI_RUN) $(MPI_NPS)4 $$t; \
+			else \
+ 			    $(MPI_RUN) $(MPI_NPS)4 $$t; \
+			fi ; \
 			declare -i rank=0; \
 			ted=$$(basename $$t .x); \
 			echo "" >> $$resultsfile; \
@@ -185,6 +200,7 @@ test: $(TEST_EXES) $(FULL_BUILD_DIR)/QA/ftests.x
 	@ echo
 	@ echo "Tests Complete"
 	
+
 docs: $(FULL_BUILD_DIR)/Doxyfile
 	cd $(FULL_BUILD_DIR) && doxygen
 
@@ -195,7 +211,7 @@ $(FULL_BUILD_DIR)/F2C_conf:
 	@ echo "subroutine test" > tmp.f90; \
 	  echo "end subroutine" >> tmp.f90; \
 	  $(MPIFC) -o tmp.o -c tmp.f90; \
-	  case `nm tmp.o | cut -d' ' -f3` in \
+	  case `nm tmp.o | cut -d' ' -f3 | tail -1` in \
 	      test_) F2C_OPT=F2C_UNDERSCORE;; \
 	      test__) F2C_OPT=F2C_DOUBLEUNDERSCORE;; \
 	      TEST) F2C_OPT=F2C_CAPS;; \
@@ -276,10 +292,13 @@ $(FULL_SO_NAME_OMP): $(PMTM_LIBDIR) $(PMTM_INCDIR) $(LIB_OBJS_SO_OMP)
 	@ echo "Library $@ built"
 	@ echo
 
-$(FULL_BUILD_DIR)/QA/tests_%.x: QA/tests_%.cpp lib
+$(OMP_TEST_EXES): QA/tests_threads.cpp
+	$(MPICXX) $(COPENMP)  $(CFLAGS) $(CXXFLAGS) -o $@ $< -L$(PMTM_LIBDIR) -l$(LIB_NAME_OMP) $(FSTDLIBS) -lrt
+
+$(FULL_BUILD_DIR)/QA/tests_%.x: QA/tests_%.cpp
 	$(MPICXX) $(CFLAGS) $(CXXFLAGS) -o $@ $< -L$(PMTM_LIBDIR) -l$(LIB_NAME) $(FSTDLIBS) -lrt
 
-$(FULL_BUILD_DIR)/QA/ftests.x: QA/tests.F90 lib
+$(FULL_BUILD_DIR)/QA/ftests.x: QA/tests.F90
 	export PFUNIT=$(PFUNIT_DIR); \
 		$(PFUNIT_DIR)/bin/wrapTest QA/tests.F90 $(FULL_BUILD_DIR)/tests_wrap.F90
 	$(PFUNIT_DIR)/bin/extract $< > $(FULL_BUILD_DIR)/suite_list

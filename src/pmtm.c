@@ -14,8 +14,8 @@
 #endif
 
 #include "pmtm.h"
-#include "pmtm_wrapper.h"
 #include "pmtm_internal.h"
+#include "pmtm_wrapper.h"
 
 #include <math.h>
 #include <stdarg.h>

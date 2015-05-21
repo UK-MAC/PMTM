@@ -13,12 +13,12 @@ PMTM_PROC_CORES     := "NUMBER"
 PMTM_PROC_THREADS   := "NUMBER"
 
 
-MPI_RUN = mpirun.awe
-MPI_NPS = -np # space required
+MPI_RUN = mpirun
+MPI_NPS = -n # space required
 
 
-PFUNIT_DIR = 
+PFUNIT_DIR = # Write the full directory path to where you have stored PFUNIT
 
 #F2C Utility for adding or removing underscores for C - Fortran linking
-F2C_DIR = 
+F2C_DIR = ../F2C
 F2C_INC = $(INC) $(F2C_DIR)

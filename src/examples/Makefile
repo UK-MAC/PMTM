@@ -22,8 +22,8 @@
 #         :            :            :  instead of linking against the objects #
 ###############################################################################
 
-BUILD_DIR ?= $(HOME)/PMTM/build
-OUT_DIR   ?= $(HOME)/PMTM
+BUILD_DIR ?= ${HOME}/PMTM/build/$(VERSION)
+OUT_DIR   ?= ${HOME}/PMTM/$(VERSION)
 ifdef LOCAL
   SUB_DIR = $(HPC_SYSTEM)/$(HPC_COMPILER)/$(HPC_MPI)
 endif

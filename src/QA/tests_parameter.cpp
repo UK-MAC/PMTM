@@ -22,11 +22,12 @@ int main(int argc, char** argv)
 }
 
 /**
- * @test <b>\c tests_parameter.cpp/for_each_rank</b>		Outputting a parameter with for_each_rank == TRUE should print the parameter on each rank
- *
- * Tests \ref PMTM_parameter_output when setting the parameter to output on all ranks
+ * @ingroup tests_param
+ * 
+ * Tests that setting \c for_each_rank to \c TRUE in \ref PMTM_parameter_output causes the parameter value to be written out for each rank.
+ * 
  */
-TEST_CASE( "tests_parameter.cpp/for_each_rank", "Outputting a parameter with for_each_rank == TRUE should print the parameter on each rank" )
+TEST_CASE( "tests_parameter.cpp/for_each_rank", "Ouputting a parameter with for_each_rank == TRUE should print the parameter on each rank" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 
@@ -49,11 +50,12 @@ TEST_CASE( "tests_parameter.cpp/for_each_rank", "Outputting a parameter with for
 }
 
 /**
- * @test <b>\c tests_parameter.cpp/rank0_only</b>		Outputting a parameter with for_each_rank == FALSE should print the parameter on rank0 only
- *
- * Tests \ref PMTM_parameter_output when setting the parameter to only be output on rank 0
+ * @ingroup tests_param
+ * 
+ * Tests that setting \c for_each_rank to \c FALSE in \ref PMTM_parameter_output causes the parameter value to be written out on rank0 only.
+ * 
  */
-TEST_CASE( "tests_parameter.cpp/rank0_only", "Outputting a parameter with for_each_rank == FALSE should print the parameter on rank0 only" )
+TEST_CASE( "tests_parameter.cpp/rank0_only", "Ouputting a parameter with for_each_rank == FALSE should print the parameter on rank0 only" )
 {
     PmtmWrapper pmtm("test_timing_file_");
 
@@ -74,10 +76,10 @@ TEST_CASE( "tests_parameter.cpp/rank0_only", "Outputting a parameter with for_ea
 }
 
 /**
- * @test <b>\c tests_parameter.cpp/output_types</b>		Should be able to output a variety of different parameter types using printf style notation
- *
- * Tests that \ref PMTM_parameter_output can handle all the different variable types and can use printf
- *
+ * @ingroup tests_param
+ * 
+ * Tests \ref PMTM_parameter_output can handle writting out ints, longs, strings, float and doubles (using C format).
+ * 
  */
 TEST_CASE( "tests_parameter.cpp/output_types", "Should be able to output a variety of different parameter types using printf style notation" )
 {
@@ -108,10 +110,10 @@ TEST_CASE( "tests_parameter.cpp/output_types", "Should be able to output a varie
 }
 
 /**
- * @test <b>\c tests_parameter.cpp/output_once</b>		With the output once type the parameter should only be printed on the first call
- *
- * Tests \ref PMTM_parameter_output only outputs on the first call when requested
- *
+ * @ingroup tests_param
+ * 
+ * Tests that using \c PMTM_OUTPUT_ONCE in \ref PMTM_parameter_output only outputs the parameter value the first time it is called.
+ * 
  */
 TEST_CASE( "tests_parameter.cpp/output_once", "With the output once type the parameter should only be printed on the first call" )
 {
@@ -136,9 +138,10 @@ TEST_CASE( "tests_parameter.cpp/output_once", "With the output once type the par
 }
 
 /**
- * @test <b>\c tests_parameter.cpp/output_on_change</b>		With the output on change type the parameter should only be printed if it changes between calls
- *
- * Tests \ref PMTM_parameter_output will output only output when a variable changes when
+ * @ingroup tests_param
+ * 
+ * Tests that using \c PMTM_OUTPUT_ON_CHANGE in \ref PMTM_parameter_output only outputs the parameter value when it has changed since the last call.
+ * 
  */
 TEST_CASE( "tests_parameter.cpp/output_on_change", "With the output on change type the parameter should only be printed if it changes between calls" )
 {
@@ -167,6 +170,12 @@ TEST_CASE( "tests_parameter.cpp/output_on_change", "With the output on change ty
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+/**
+ * @ingroup tests_param
+ * 
+ * Tests that using \c PMTM_OUTPUT_ALWAYS in \ref PMTM_parameter_output outputs the parameter value everytime it is called.
+ * 
+ */
 TEST_CASE( "tests_parameter.cpp/output_always", "With the output always type the parameter should always be printed" )
 {
     PmtmWrapper pmtm("test_timing_file_");

@@ -1,5 +1,5 @@
 
-F2C_DIR = 
+F2C_DIR = ../F2C
 F2C_INC = $(INC)$(F2C_DIR)/include
 
 LIBDIR = -L

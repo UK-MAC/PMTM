@@ -245,7 +245,7 @@ PMTM_error_t set_file(struct PMTM_instance * instance, const char * file_name);
 PMTM_error_t create_file(struct PMTM_instance * instance, const char * file_name);
 PMTM_error_t write_file_header(struct PMTM_instance * instance);
 PMTM_error_t get_specific_runtime_variables(const struct PMTM_instance * instance);
-PMTM_error_t output_specific_runtime_variable(const struct PMTM_instance * instance, char * envVar);
+PMTM_error_t output_specific_runtime_variable(const struct PMTM_instance * instance, const char * envVar);
 void get_file_words(const char * filename, char * wanted[], int *wIndex); //, const struct PMTM_instance * instance);
 int check(char * env_vars[], char * new_var, int *indx);
 void pmtm_warn(const char * message, ...);

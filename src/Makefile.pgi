@@ -1,9 +1,3 @@
-###############################################################################
-# This Make include file specifies all the Compiler specific variables required
-# by the Benchmark CD. It is included via the Makefile.include file.
-#
-# This is the Makefile that was used during compilation of the benchmark CD on
-# AWE systems using the PGI compilers version 10.8.0.
 #
 # See Makefile.include for meanings of the variables.
 ###############################################################################
@@ -16,7 +10,7 @@ AR  = ar
 
 PMTM_COMPILER_VENDOR  = "STMicroelectronics"
 PMTM_COMPILER_NAME    = "PGI"
-PMTM_COMPILER_VERSION = "10.8.0"
+PMTM_COMPILER_VERSION = "${shell pgcc -V 2>&1 | sed -n 's/.*pgcc \([0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?\).*/\1/p'}"
 
 REAL4    = -r4
 REAL8    = -r8
@@ -52,6 +46,7 @@ FSHARED   = -shared
 FIEEE     = -Kieee
 FFP_CONST = $(FIEEE) -Mdaz
 F2C_NAMING = F2C_UNDERSCORE
+FOPENMP   = -mp=allcores
 F_debug    = -g
 F_opt     = -fastsse
 F_highopt = -O4 -fastsse $(FINLINE)
@@ -63,6 +58,7 @@ CSTATIC   = -Bstatic
 CINLINE   = -Minline
 CDEF      = -D
 CUNDEF    = -U
+COPENMP   = -mp=allcores
 C_debug   = -g
 C_opt     = -O2
 C_highopt = -O4
@@ -73,10 +69,21 @@ CXXDEPENDENCY     = -MM
 CXXPREINCLUDE_MPI = --preinclude "mpi.h"
 CXXLFLAGS         =
 CXXSTDLIBS        = $(LIB)std $(LIB)C
+CXXOPENMP         = -mp=allcores
 CXX_debug         = -g
 CXX_opt           = -O2
 CXX_highopt       = -O4
 
 # Misc compiler dependent options:
+PEGASUS_PLAT_OPT = $(FDEF)MPI2 $(FDEF)PGI
+
+# Corvus Pre-processor options:
+#####################################
+#
+# Delete the options below as needed, depending on maths libraries used:
+#
+#IBM_SETRTEOPTS  = -DIBM_SETRTEOPTS
+#IBM_ESSEL       = -DIBM_ESSEL
+#INTEL_MKL       = -DINTEL_MKL
 
 ###############################################################################

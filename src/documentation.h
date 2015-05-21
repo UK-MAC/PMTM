@@ -33,6 +33,38 @@
 /// @ingroup outputs
 /// Functions used to output environment information to the PMTM output
 
+/// @defgroup tests Test Plan
+/// Descriptions of the Unit tests and how they are related to the code
+
+/// @defgroup tests_init Initialization Unit Tests
+/// @ingroup tests
+/// Unit tests that ensure the correct functionality of the initialising functions.
+
+/// @defgroup tests_final Finalization Unit Tests
+/// @ingroup tests
+/// Unit tests that ensure the correct functionality of the finalising functions.
+
+/// @defgroup tests_opts Options Unit Tests
+/// @ingroup tests
+/// Unit tests that ensure the correct functionality of the Option control functions.
+
+/// @defgroup tests_param Parameter Unit Tests
+/// @ingroup tests
+/// Unit tests that ensure the correct functionality of the Parameter outputting functions.
+
+/// @defgroup tests_thrds Threaded Unit Tests
+/// @ingroup tests
+/// Unit tests that ensure the correct functionality of the threaded functions.
+
+/// @defgroup tests_timer Timer Unit Tests
+/// @ingroup tests
+/// Unit tests that ensure the correct functionality of timer control functions.
+
+/// @defgroup tests_fortran Fortran API Tests
+/// @ingroup tests
+/// Unit test that explicit ensure that calling PMTM through the Fortran API still retain the correct behaviour.
+
+
 /// @mainpage The Performance Modelling Timing Module
 ///
 /// @section intro Introduction
@@ -246,15 +278,107 @@
 /// During initialisation PMTM checks for the presence of three @c .pmtmrc files; a
 /// system defined @b /etc location, the users @b homespace and the directory the code
 /// is run from. The main use for the @c .pmtmrc is to set a list of Environment 
-/// Variables to output.
+/// Variables to output. To do this simply list the variables required, one to a line:
+///
+/// \c VARIABLE_ONE \n
+/// \c VARIABLE_TWO \n
+/// etc. \n
 /// 
 /// It can also be used to set the options @c PMTM_DATA_STORE, @c PMTM_OPTION_OUTPUT_ENV,
 /// @c PMTM_OPTION_NO_LOCAL_COPY and @c PMTM_OPTION_NO_STORED_COPY. To set one of these
 /// variables add a line to the @c .pmtmrc file in either of the following formats:
 ///
-/// `VARIABLE VALUE`
+/// \c `VARIABLE \c VALUE`
 /// 
 /// or
 ///
-/// `VARIABLE=VALUE`
+/// \c `VARIABLE=VALUE`
 ///
+/// @section constants PMTM Constants
+/// 
+/// | Fortran Type | C Type                | Name                     | Description |
+/// | :------------| :-------------------- | :----------------------- | :---------- |  
+/// | \c integer   | \c PMTM_instance_t    | \c PMTM_DEFAULT_INSTANCE | The default instance handle which can be used whenever an instance is required in a PMTM routine.  |   
+/// | \c integer   | \c PMTM_timer_group_t | \c PMTM_DEFAULT_GROUP    | The default timer group handle which can be used whenever a timer group is required in a PMTM routine.  | 
+/// |  -           | \c PMTM_timer_t       | \c PMTM_NULL_TIMER       | A value to which no valid timer will set. Useful to set as an initial value for timers so that if they have not been initialised before they are used PMTM will issue an error.  | 
+/// | \c integer   | \c PMTM_timer_type_t  | \c PMTM_TIMER_NONE       | Used in the \ref PMTM_create_timer routine. This specifies to output no statistics for the given timer.  |
+/// | \c integer   | \c PMTM_timer_type_t  | \c PMTM_TIMER_MAX        | Used in the \ref PMTM_create_timer routine. This specifies to output maximum times across all ranks for the given timer.  |   
+/// | \c integer   | \c PMTM_timer_type_t  | \c PMTM_TIMER_MIN        | Used in the \ref PMTM_create_timer routine. This specifies to output minimum times across all ranks for the given timer.  |   
+/// | \c integer   | \c PMTM_timer_type_t  | \c PMTM_TIMER_AVG 	      | Used in the \ref PMTM_create_timer routine. This specifies to output average times across all ranks for the given timer.  |   
+/// | \c integer   | \c PMTM_timer_type_t  | \c PMTM_TIMER_ALL        | Used in the \ref PMTM_create_timer routine. This specifies to output average, maximum and minimum times across all ranks for the given timer.  |   
+/// | \c integer   | \c PMTM_timer_type_t  | \c PMTM_TIMER_MMA        | Used in the \ref PMTM_create_timer routine. This specifies to output average, maximum and minimum times across all ranks for the given timer, but no information from the individual ranks. Version 2.5.0 onwards. |
+/// | \c integer   | \c PMTM_timer_type_t  | \c PMTM_TIMER_AVO        | Used in the \ref PMTM_create_timer routine. This specifies to output average times across all ranks for the given timer but no information from the individual ranks. Version 2.5.0 onwards. | 
+/// | \c integer   | \c PMTM_timer_type_t  | \c PMTM_TIMER_INT        | Used in the \ref PMTM_create_timer routine. This specifies to no timing information for the given timer. Version 2.5.0 onwards. |
+/// | \c integer   | \c PMTM_output_type_t | \c PMTM_OUTPUT_ALWAYS    | Used in the \ref PMTM_parameter_output routine. This specifies to output the parameter on every call to this routine.  |   
+/// | \c integer   | \c PMTM_output_type_t | \c PMTM_OUTPUT_ON_CHANGE | Used in the \ref PMTM_parameter_output routine. This specifies to output the parameter whenever the value of the parameter is different to the last time the routine was called.  |   
+/// | \c integer   | \c PMTM_output_type_t | \c PMTM_OUTPUT_ONCE      | Used in the \ref PMTM_parameter_output routine. This specifies to output the parameter on the first call to the routine and then to ignore all later calls with the same parameter name.  |   
+/// | \c integer   | \c int 		   | \c PMTM_NO_MAX           | Used in the  \ref PMTM_set_sample_mode routine to specify that the given timer should have no maximum number of samples.  |   
+/// | \c integer   | \c int 		   | \c PMTM_DEFAULT_FREQ     | Used in the \ref PMTM_set_sample_mode routine to specify that the given timer should sample with the default sample frequence (default: sampling on each timer routine call).  |   
+/// | \c integer   | \c int 		   | \c PMTM_DEFAULT_MAX      | Used in the \ref PMTM_set_sample_mode routine to specify that the given timer should have the default number of maximum samples (default: no maximum number of samples).  |   
+/// | -            | \c PMTM_BOOL 	   | \c PMTM_TRUE 	      | True value used in PMTM.  |   
+/// | -            | \c PMTM_BOOL 	   | \c PMTM_FALSE	      | False value used in PMTM. | 
+///
+///
+/// \section All_Examples Examples
+/// The following code samples show very simple examples of PMTM being used in Fortran and C MPI codes with and without OpenMP. They demonstrate the initialisation, timer calls and finalisation involved in using PMTM.
+///
+/// \subsection fortran_ex Fortran Examples
+/// An example of how to use PMTM in a Fortran program can be found in \ref f_example.F90
+///
+/// \subsubsection fortran_timers_mod Fortran Timers Module
+/// For codes that use PMTM in multiple modules the timer handles will need to made available to all modules that want to control the timers. One way of doing this is by creating a PMTM timers module which can be <code>USE</code>'d by the other modules as needed. \ref f_pmtm_timers.F90 is an example module which contains the global timer handles, as well as a helper method, \c create_timers, which can be called to initialise all the handles. The \c create_timers routine will need to be called after \ref PMTM_init has been called.
+/// 
+/// \subsubsection fortran_library_ex Fortran Library Example
+/// PMTM can also be used from within a library called from a host code with \ref f_lib_caller_example.f90 an example of the host code and \ref f_lib_example.f90 an example of the library.
+///
+/// \b Note that \ref f_lib_example.f90 uses the \ref PMTM_initialized function to first check whether PMTM has already been initialised. By doing so, errors can be prevented from trying to initialise the same instance twice. Also, if PMTM has not been initialised then the library can add in code to initialise its own instance (or even create its own instance using \ref PMTM_create_instance) to store timing information in its own file.
+///
+/// \subsubsection fortran_opemp Fortran OpenMP Example
+/// The example in \ref f_openmp_example.f90 highlights how to measure thread contributions to a running loop. The main thing to notice is how it uses separate \c parallel and \c do directives in order to allow the timing calls to occur in the gap after becoming multi-threaded and before the loop starts. Any other way would cause different behaviour. For example, placing the timer calls before the \c parallel would lead to a single timer capturing the end to end time of the loop oblivious to any parallel activity. The timer calls could also be moved into the loop body and as such inside the \c do directives, and in this case the timing is per thread, but it only includes an accumulation of the loop bodies run by each, the loop overhead will be left out. This wouldn't be ideal as there might be a large number of calls in some cases and if the loop was light as below the overhead to the user would be noticeable. Note that the \ref PMTM_create_timer call could not be moved inside the loop as only one create is allowed per timer.
+///
+/// \subsubsection fort_omp_timers_mod Fortran OpenMP Timers Module
+/// For codes that use PMTM in multiple modules and threads, the timer handles will need to be made available to all modules that want to control the timers. The easiest way is to make them explicitly \c threadprivate as shown below. If the timers and their uses do not occur in the same \c parallel region as might be suggested if using a solution similar to the serial version of the subroutine below, then it is important to observe the conditions about preservation of \c threadprivate variables as noted in section <em>{2.9.2 threadprivate Directive}</em> of the OpenMP 3.0 standard. To preserve values, this suggests parallel regions should not be nested, should have identical thread counts and have the dynamic adjustment feature set to false.
+///
+///
+/// \subsection c_examples C/C++ Examples
+/// An exmaple of how to use PMTM in a C/C++ program can be found in \ref c_example.c
+///
+/// \subsubsection c_library_ex C Library Example
+/// A \c C collorary to the \ref fortran_library_ex can be seen with \ref c_lib_caller_example.c showing the host code and \ref c_lib_example.c showing the library part.
+///
+/// \subsubsection c_openmp C OpenMP Example
+/// A \c C collorary to the \ref fortran_opemp with the same points to be made, can be seen with \ref c_openmp_example.c.
+///
+/// \example c_example.c
+/// Example of PMTM within one C/C++ file
+///
+/// \example c_lib_example.c
+/// C example of calling PMTM within a library and host code
+/// 
+/// This is the library code and the host section can be found in \ref c_lib_caller_example.c. \b Note that the library uses the \ref PMTM_initialized function to first check whether PMTM has already been initialised. By doing so, errors can be prevented from trying to initialise the same instance twice. Also, if PMTM has not been initialised then the library can add in code to initialise its own instance (or even create its own instance using \ref PMTM_create_instance) to store timing information in its own file.
+///
+/// \example c_lib_caller_example.c
+/// This is the host code using PMTM that is calls a library containing PMTM shown in \ref c_lib_example.c. 
+///
+/// \example c_openmp_example.c
+/// The following example highlights how to measure thread contributions to a running loop. The main thing to notice is how it uses separate \c parallel and \c do directives in order to allow the timing calls to occur in the gap after becoming multi-threaded and before the loop starts. Any other way would cause different behaviour. For example, placing the timer calls before the \c parallel would lead to a single timer capturing the end to end time of the loop oblivious to any parallel activity. The timer calls could also be moved into the loop body and as such inside the \c do directives, and in this case the timing is per thread, but it only includes an accumulation of the loop bodies run by each, the loop overhead will be left out. This wouldn't be ideal as there might be a large number of calls in some cases and if the loop was light as below the overhead to the user would be noticeable. Note that the \ref PMTM_create_timer call could not be moved inside the loop as only one create is allowed per timer.
+///
+/// \example f_example.F90
+/// Example of PMTM within one Fortran file
+///
+/// \example f_pmtm_timers.F90
+/// Example of setting up a PMTM module to control timer usage across several modules
+///
+/// \example f_lib_example.f90
+/// Example of calling PMTM within a library and host code
+/// 
+/// This is the library code and the host section can be found in \ref f_lib_caller_example.f90. \b Note that the library uses the \ref PMTM_initialized function to first check whether PMTM has already been initialised. By doing so, errors can be prevented from trying to initialise the same instance twice. Also, if PMTM has not been initialised then the library can add in code to initialise its own instance (or even create its own instance using \ref PMTM_create_instance) to store timing information in its own file.
+///
+/// \example f_lib_caller_example.f90
+/// This is the host code using PMTM that is calls a library containing PMTM shown in \ref f_lib_example.f90. 
+///
+/// \example f_openmp_example.f90
+/// The following example highlights how to measure thread contributions to a running loop. The main thing to notice is how it uses separate \c parallel and \c do directives in order to allow the timing calls to occur in the gap after becoming multi-threaded and before the loop starts. Any other way would cause different behaviour. For example, placing the timer calls before the \c parallel would lead to a single timer capturing the end to end time of the loop oblivious to any parallel activity. The timer calls could also be moved into the loop body and as such inside the \c do directives, and in this case the timing is per thread, but it only includes an accumulation of the loop bodies run by each, the loop overhead will be left out. This wouldn't be ideal as there might be a large number of calls in some cases and if the loop was light as below the overhead to the user would be noticeable. Note that the \ref PMTM_create_timer call could not be moved inside the loop as only one create is allowed per timer.
+///
+/// \example f_omp_timers_mod.f90
+/// For codes that use PMTM in multiple modules and threads, the timer handles will need to be made available to all modules that want to control the timers. The easiest way is to make them explicitly \c threadprivate as shown below. If the timers and their uses do not occur in the same \c parallel region as might be suggested if using a solution similar to the serial version of the subroutine below, then it is important to observe the conditions about preservation of \c threadprivate variables as noted in section <em>{2.9.2 threadprivate Directive}</em> of the OpenMP 3.0 standard. To preserve values, this suggests parallel regions should not be nested, should have identical thread counts and have the dynamic adjustment feature set to false.

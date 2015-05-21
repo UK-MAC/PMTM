@@ -21,7 +21,12 @@ int main(int argc, char** argv)
     return run_tests(argc, argv);
 }
 
-TEST_CASE( "finalize/reinitialise", "Finalising PMTM leaves the library in a state where it can be initialised again without error" )
+/**
+ * @ingroup tests_final
+ * 
+ * Tests that \ref PMTM_finalize completes properly and that a new instance of PMTM can be created afterwards.
+ */
+TEST_CASE( "tests_finalize.cpp/reinitialise", "Finalising PMTM leaves the library in a state where it can be initialised again without error" )
 {
     // Each wrapper instance initialises on creation and then finalizes on
     // destruction.
@@ -31,7 +36,12 @@ TEST_CASE( "finalize/reinitialise", "Finalising PMTM leaves the library in a sta
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "finalize/timer_output", "Finalising PMTM should cause it to output all unprinted timers followed by End of File to the output file" )
+/**
+ * @ingroup tests_final
+ * 
+ * Tests that \ref PMTM_finalize correctly prints timers to the output file and then writes "End of File"
+ */
+TEST_CASE( "tests_finalize.cpp/timer_output", "Finalising PMTM should cause it to output all unprinted timers followed by End of File to the output file" )
 {
     PmtmWrapper pmtm("test_timing_file_");
     PMTM_timer_t timer_id;
@@ -56,7 +66,12 @@ TEST_CASE( "finalize/timer_output", "Finalising PMTM should cause it to output a
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "finalize/keep_local_copy_implicit", "Finalising PMTM should keep the local copy of the file if PMTM_KEEP_LOCAL_COPY and PMTM_DELETE_LOCAL_COPY are not set")
+/**
+ * @ingroup tests_final
+ * 
+ * Tests that \ref PMTM_finalize keeps a local copy of the output file by default with no environment variable being set.
+ */
+TEST_CASE( "tests_finalize.cpp/keep_local_copy_implicit", "Finalising PMTM should keep the local copy of the file if PMTM_KEEP_LOCAL_COPY and PMTM_DELETE_LOCAL_COPY are not set")
 {
     unsetenv("PMTM_KEEP_LOCAL_COPY");
     unsetenv("PMTM_DELETE_LOCAL_COPY");
@@ -79,7 +94,12 @@ TEST_CASE( "finalize/keep_local_copy_implicit", "Finalising PMTM should keep the
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "finalize/keep_local_copy_explicit", "Finalising PMTM should keep the local copy if PMTM_KEEP_LOCAL_COPY is set and not '', '0' or case insensitive 'FALSE' and PMTM_DELETE_LOCAL_COPY is set")
+/**
+ * @ingroup tests_final
+ * 
+ * Tests that \ref PMTM_finalize correctly lets \c PMTM_KEEP_LOCAL_COPY override \c PMTM_DELETE_LOCAL_COPY, provided that it is not set to a false value.
+ */
+TEST_CASE( "tests_finalize.cpp/keep_local_copy_explicit", "Finalising PMTM should keep the local copy if PMTM_KEEP_LOCAL_COPY is set and not '', '0' or case insensitive 'FALSE' and PMTM_DELETE_LOCAL_COPY is set")
 {
     setenv("PMTM_KEEP_LOCAL_COPY","ON",1);
     setenv("PMTM_DELETE_LOCAL_COPY","ON",1);
@@ -103,7 +123,12 @@ TEST_CASE( "finalize/keep_local_copy_explicit", "Finalising PMTM should keep the
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "finalize/delete_local_copy_explicit", "Finalising PMTM should delete the local copy if PMTM_KEEP_LOCAL_COPY is set to '', '0' or case insensitive 'FALSE'")
+/**
+ * @ingroup tests_final
+ * 
+ * Tests that \ref PMTM_finalize deletes the local output file if \c PMTM_KEEP_LOCAL_COPY is set to a false value.
+ */
+TEST_CASE( "tests_finalize.cpp/delete_local_copy_explicit", "Finalising PMTM should delete the local copy if PMTM_KEEP_LOCAL_COPY is set to '', '0' or case insensitive 'FALSE'")
 {
   int num_cases = 6;
   char * CASES[] = {"", "0", "FALSE", "False", "false", "FaLsE"};
@@ -133,7 +158,12 @@ TEST_CASE( "finalize/delete_local_copy_explicit", "Finalising PMTM should delete
   MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "finalize/delete_local_copy_implicit", "Finalising PMTM should delete the local copy of the file if PMTM_KEEP_LOCAL_COPY is not set and PMTM_DELETE_LOCAL_COPY is set and not '', '0' or case insensitive 'FALSE'")
+/**
+ * @ingroup tests_final
+ * 
+ * Tests that \ref PMTM_finalize will delete the local output file if \c PMTM_DELETE_LOCAL_COPY is set to a true value and \c PMTM_KEEP_LOCAL_COPY is not set.
+ */
+TEST_CASE( "tests_finalize.cpp/delete_local_copy_implicit", "Finalising PMTM should delete the local copy of the file if PMTM_KEEP_LOCAL_COPY is not set and PMTM_DELETE_LOCAL_COPY is set and not '', '0' or case insensitive 'FALSE'")
 {
     unsetenv("PMTM_KEEP_LOCAL_COPY");
     setenv("PMTM_DELETE_LOCAL_COPY","ON",1);
@@ -158,7 +188,12 @@ TEST_CASE( "finalize/delete_local_copy_implicit", "Finalising PMTM should delete
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "finalize/delete_local_copy_internal", "Finalising PMTM should delete the local copy of the file if PMTM_OPTION_NO_LOCAL_COPY is set to PMTM_TRUE using the set_option function")
+/**
+ * @ingroup tests_final
+ * 
+ * Tests using the \ref PMTM_set_option command to set the \c PMTM_OPTION_NO_LOCAL_COPY to \c PMTM_TRUE and that \ref PMTM_finalize then deletes the local copy of the output file.
+ */
+TEST_CASE( "tests_finalize.cpp/delete_local_copy_internal", "Finalising PMTM should delete the local copy of the file if PMTM_OPTION_NO_LOCAL_COPY is set to PMTM_TRUE using the set_option function")
 {
     FileDeleter file_deleter("test_timing_file_");
       
@@ -182,7 +217,13 @@ TEST_CASE( "finalize/delete_local_copy_internal", "Finalising PMTM should delete
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "finalize/file_movement", "Finalising PMTM with the environment variable PMTM_DATA_STORE set should copy the pmtm output to the directory indicated by PMTM_DATA_STORE")
+/**
+ * @ingroup tests_final
+ * 
+ * Tests \ref PMTM_finalize correctly creates a copy of the output file in the location set by \c PMTM_DATA_STORE.
+ * 
+ */
+TEST_CASE( "tests_finalize.cpp/file_movement", "Finalising PMTM with the environment variable PMTM_DATA_STORE set should copy the pmtm output to the directory indicated by PMTM_DATA_STORE")
 {
     char * test_dir = (char *) malloc(strlen(getenv("PWD")) + 20);
     strcpy(test_dir,getenv("PWD"));
@@ -218,7 +259,13 @@ TEST_CASE( "finalize/file_movement", "Finalising PMTM with the environment varia
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-TEST_CASE( "finalize/file_movement_disabled", "Finalising PMTM with the internal PMTM_OPTION_NO_STORED_COPY variable set to PMTM_TRUE using the internal set_option function should not copy file to PMTM_DATA_STORE")
+/**
+ * @ingroup tests_final
+ * 
+ * Tests that setting \c PMTM_OPTION_NO_STORED_COPY to \c PMTM_TRUE using the \ref PMTM_set_option function causes \ref PMTM_finalize to not create a copy of the output file in the location identified in \c PMTM_DATA_STORE.
+ * 
+ */
+TEST_CASE( "tests_finalize.cpp/file_movement_disabled", "Finalising PMTM with the internal PMTM_OPTION_NO_STORED_COPY variable set to PMTM_TRUE using the internal set_option function should not copy file to PMTM_DATA_STORE")
 {
     char * test_dir = (char *) malloc(strlen(getenv("PWD")) + 22);
     strcpy(test_dir,getenv("PWD"));

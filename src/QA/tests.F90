@@ -1,6 +1,10 @@
-
+!>
+!! \file
+!!
 #include "pFUnit.inc"
 
+!> \brief Series of tests to ensure that the Fortran API is working correctly with the \c C library sections of \c PMTM
+!!
 module tests_mod
   use pFUnit
   use PMTM
@@ -11,16 +15,32 @@ module tests_mod
 contains
 
 !------------------------------------------------------------------------------
-
+!>\section test_set_option
+!! Test for Fortran API of \ref PMTM_set_option
+!!@ingroup tests_fortran
+!! 
+!! Tests that when \ref PMTM_set_option is given correct values that it returns \c PMTM_SUCCESS
+!!
   subroutine test_set_option()
     integer :: err
 
     call PMTM_set_option(PMTM_OPTION_OUTPUT_ENV, .false., err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
+    
+    call PMTM_set_option(PMTM_OPTION_NO_LOCAL_COPY, .false., err)
+    call ASSERTEQUAL(PMTM_SUCCESS, err)
+    
+    call PMTM_set_option(PMTM_OPTION_NO_STORED_COPY, .false., err)
+    call ASSERTEQUAL(PMTM_SUCCESS, err)
   end subroutine test_set_option
 
 !------------------------------------------------------------------------------
-
+!> \section test_init
+!! Test for Fortran API of \ref PMTM_init
+!! @ingroup tests_fortran
+!! 
+!! Tests that when \ref PMTM_init is called with valid arguments that it returns \c PMTM_SUCCESS
+!!
   subroutine test_init()
     integer :: err
 
@@ -29,7 +49,12 @@ contains
   end subroutine test_init
 
 !------------------------------------------------------------------------------
-
+!> \section test_finalize
+!! Test for Fortran API of \ref PMTM_finalize
+!! @ingroup tests_fortran
+!! 
+!! Tests that when \ref PMTM_finalize is called with valid arguments that it returns \c PMTM_SUCCESS
+!!
   subroutine test_finalize()
     integer :: err
 
@@ -38,21 +63,12 @@ contains
   end subroutine test_finalize
 
 !------------------------------------------------------------------------------
-
-  subroutine test_set_file_name()
-    integer :: err
-    call PMTM_init("", "Fortran Tests", err)
-    call ASSERTEQUAL(PMTM_SUCCESS, err)
-
-    call PMTM_set_file_name(PMTM_DEFAULT_INSTANCE, "fortran_tests_", err)
-    call ASSERTEQUAL(PMTM_SUCCESS, err)
-
-    call PMTM_finalize(err)
-    call ASSERTEQUAL(PMTM_SUCCESS, err)
-  end subroutine test_set_file_name
-
-!------------------------------------------------------------------------------
-
+!> \section test_log_flags
+!! Test for Fortran API of \ref PMTM_log_flags
+!! @ingroup tests_fortran
+!! 
+!! Tests that giving a flag list to \ref PMTM_log_flags returns \c PMTM_SUCCESS
+!!
   subroutine test_log_flags()
     integer :: err
 
@@ -61,7 +77,15 @@ contains
   end subroutine test_log_flags
 
 !------------------------------------------------------------------------------
-
+!> \section test_initialized
+!! Test for Fortran API of \ref PMTM_initialized
+!! @ingroup tests_fortran
+!! 
+!! Tests that \ref PMTM_initialized returns FALSE when \c PMTM is not initialised and TRUE when it is. The test encompasses the situations of:
+!! - PMTM has never been initialised : returns FALSE
+!! - PMTM has been initialised       : returns TRUE
+!! - PMTM has been finalised         : returns FALSE
+!!
   subroutine test_initialized()
     integer :: err
 
@@ -78,8 +102,33 @@ contains
     call ASSERTFALSE(PMTM_initialized())
   end subroutine test_initialized
 
+  
 !------------------------------------------------------------------------------
+!> \section test_set_file_name
+!! Test for Fortran API of \ref PMTM_set_file_name
+!! @ingroup tests_fortran
+!! 
+!! Tests that \ref PMTM_set_file_name is called with valid arguments that it returns \c PMTM_SUCCESS. \ref PMTM_init and \ref PMTM_finalize also need to be called to ensure that \ref PMTM_set_file_name works correctly.
+!!
+  subroutine test_set_file_name()
+    integer :: err
+    call PMTM_init("", "Fortran Tests", err)
+    call ASSERTEQUAL(PMTM_SUCCESS, err)
 
+    call PMTM_set_file_name(PMTM_DEFAULT_INSTANCE, "fortran_tests_", err)
+    call ASSERTEQUAL(PMTM_SUCCESS, err)
+
+    call PMTM_finalize(err)
+    call ASSERTEQUAL(PMTM_SUCCESS, err)
+  end subroutine test_set_file_name
+
+!------------------------------------------------------------------------------
+!> \section test_create_instance
+!! Test for Fortran API of \ref PMTM_create_instance
+!! @ingroup tests_fortran
+!! 
+!! Tests that calling \ref PMTM_create_instance creates a new \c PMTM instance handle that is not the same as \c PMTM_DEFAULT_INSTANCE
+!!
   subroutine test_create_instance()
     integer :: err
     integer :: instance
@@ -98,7 +147,12 @@ contains
   end subroutine test_create_instance
 
 !------------------------------------------------------------------------------
-
+!> \section test_destroy_instance
+!! Test for Fortran API of \ref PMTM_destroy_instance
+!! @ingroup tests_fortran
+!! 
+!! Tests that \ref PMTM_destroy_instance returns \c PMTM_SUCCESS when called on a created instance that is not \c PMTM_DEFAULT_INSTANCE
+!!
   subroutine test_destroy_instance()
     integer :: err
     integer :: instance
@@ -117,7 +171,12 @@ contains
   end subroutine test_destroy_instance
 
 !------------------------------------------------------------------------------
-
+!> \section test_create_timer_group
+!! Test for Fortran API of \ref PMTM_create_timer_group
+!! @ingroup tests_fortran
+!! 
+!! Tests that calling \ref PMTM_create_timer_group in \c PMTM_DEFAULT_INSTANCE that is not \c PMTM_DEFAULT_GROUP returns \c PMTM_SUCCESS
+!!
   subroutine test_create_timer_group()
     integer :: err
     integer :: group
@@ -133,10 +192,15 @@ contains
   end subroutine test_create_timer_group
 
 !------------------------------------------------------------------------------
-
+!> \section test_create_timer
+!! Test for Fortran API of \ref PMTM_create_timer
+!! @ingroup tests_fortran
+!! 
+!! Tests that calling \ref PMTM_create_timer with each of the different timer types in turn returns \c PMTM_SUCCESS
+!!
   subroutine test_create_timer()
     integer :: err
-    type(pmtm_timer) :: timer_none, timer_max, timer_min, timer_avg, timer_all, timer_mma, timer_int
+    type(pmtm_timer) :: timer_none, timer_max, timer_min, timer_avg, timer_all, timer_mma, timer_avo, timer_int
 
     call PMTM_init("fortran_tests_", "Fortran Tests", err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
@@ -159,6 +223,9 @@ contains
     call PMTM_create_timer(PMTM_DEFAULT_GROUP, timer_mma, "New Timer MMA", PMTM_TIMER_MMA, err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
     
+    call PMTM_create_timer(PMTM_DEFAULT_GROUP, timer_avo, "New Timer AVO", PMTM_TIMER_AVO, err)
+    call ASSERTEQUAL(PMTM_SUCCESS, err)
+    
     call PMTM_create_timer(PMTM_DEFAULT_GROUP, timer_int, "New Timer INT", PMTM_TIMER_INT, err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
 
@@ -167,7 +234,12 @@ contains
   end subroutine test_create_timer
 
 !------------------------------------------------------------------------------
-
+!> \section test_timer_output
+!! Test for Fortran API of \ref PMTM_timer_output
+!! @ingroup tests_fortran
+!! 
+!! Tests that calling \ref PMTM_timer_output on \c PMTM_DEFAULT_INSTANCE returns \c PMTM_SUCCESS
+!!
   subroutine test_timer_output()
     integer :: err
 
@@ -182,11 +254,16 @@ contains
   end subroutine test_timer_output
 
 !------------------------------------------------------------------------------
-
+!> \section test_get_cpu_time
+!! Test for Fortran API of \ref PMTM_get_cpu_time
+!! @ingroup tests_fortran
+!! 
+!! Tests that calling \ref PMTM_get_cpu_time before and after a timer has been started both return a time greater than zero and that they are not the same.
+!!
   subroutine test_get_cpu_time()
     integer :: err
     type(pmtm_timer) :: timer
-    real(8) :: time
+    real(8) :: time_before, time_after
 
     call PMTM_init("fortran_tests_", "Fortran Tests", err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
@@ -194,13 +271,14 @@ contains
     call PMTM_create_timer(PMTM_DEFAULT_GROUP, timer, "New Timer", PMTM_TIMER_ALL, err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
 
-    time = PMTM_get_cpu_time(timer)
-    call ASSERTTRUE(time > 0) ! time here is system time
+    time_before = PMTM_get_cpu_time(timer)
+    call ASSERTTRUE(time_before > 0) ! time here is system time
 
     call PMTM_timer_start(timer)
 
-    time = PMTM_get_cpu_time(timer)
-    call ASSERTTRUE(time > 0) ! time here is time since timer was started
+    time_after = PMTM_get_cpu_time(timer)
+    call ASSERTTRUE(time_after > 0) ! time here is time since timer was started
+    call ASSERTNOTEQUAL(time_before, time_after)
     
     call PMTM_timer_stop(timer)
 
@@ -209,7 +287,12 @@ contains
   end subroutine test_get_cpu_time
 
 !------------------------------------------------------------------------------
-
+!> \section test_get_last_cpu_time
+!! Test for Fortran API of \ref PMTM_get_last_cpu_time
+!! @ingroup tests_fortran
+!! 
+!! Tests calling \ref PMTM_get_last_cpu_time before and after a timer is started but before it was stopped returns a time of zero and that calling it after the timer is stopped returns a time that is non-zero.
+!!
   subroutine test_get_last_cpu_time()
     integer :: err
     type(pmtm_timer) :: timer
@@ -239,11 +322,16 @@ contains
   end subroutine test_get_last_cpu_time
 
 !------------------------------------------------------------------------------
-
+!> \section test_get_wc_time
+!! Test for Fortran API of \ref PMTM_get_wc_time
+!! @ingroup tests_fortran
+!! 
+!! Tests that calling \ref PMTM_get_wc_time before and after a timer has been started both return a time greater than zero and that they are not the same.
+!!
   subroutine test_get_wc_time()
     integer :: err
     type(pmtm_timer) :: timer
-    real(8) :: time
+    real(8) :: time_before, time_after
 
     call PMTM_init("fortran_tests_", "Fortran Tests", err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
@@ -251,13 +339,14 @@ contains
     call PMTM_create_timer(PMTM_DEFAULT_GROUP, timer, "New Timer", PMTM_TIMER_ALL, err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
 
-    time = PMTM_get_wc_time(timer)
-    call ASSERTTRUE(time > 0) ! time here is just system time
+    time_before = PMTM_get_wc_time(timer)
+    call ASSERTTRUE(time_before > 0) ! time here is just system time
 
     call PMTM_timer_start(timer)
 
-    time = PMTM_get_wc_time(timer)
-    call ASSERTTRUE(time > 0) ! time here is time since timer was started
+    time_after = PMTM_get_wc_time(timer)
+    call ASSERTTRUE(time_after > 0) ! time here is time since timer was started
+    call ASSERTNOTEQUAL(time_before, time_after)
     
     call PMTM_timer_stop(timer)
 
@@ -266,7 +355,12 @@ contains
   end subroutine test_get_wc_time
 
 !------------------------------------------------------------------------------
-
+!> \section test_get_last_wc_time
+!! Test for Fortran API of \ref PMTM_get_last_wc_time
+!! @ingroup tests_fortran
+!! 
+!! Tests calling \ref PMTM_get_last_wc_time before and after a timer is started but before it was stopped returns a time of zero and that calling it after the timer is stopped returns a time greater than zero.
+!!
   subroutine test_get_last_wc_time()
     integer :: err
     type(pmtm_timer) :: timer
@@ -295,28 +389,43 @@ contains
     call ASSERTEQUAL(PMTM_SUCCESS, err)
   end subroutine test_get_last_wc_time
 !------------------------------------------------------------------------------
-
+!> \section test_parameter_output
+!! Test for Fortran API of \ref PMTM_parameter_output
+!! @ingroup tests_fortran
+!! 
+!! Tests that calling \ref PMTM_parameter_output with different valid variable types returns \c PMTM_SUCCESS
+!!
   subroutine test_parameter_output()
     integer :: err
     real(8)            :: rval
+    real(4)	       :: r4val
     integer(4)         :: ival
+    integer(8)	       :: i8val
     character(len=100) :: sval
     logical            :: lval
 
     call PMTM_init("fortran_tests_", "Fortran Tests", err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
 
-    rval = 1.0
-    ival = 2
-    sval = "Test"
-    lval = .true.
+    rval  = 1.0
+    r4val = 0.1
+    ival  = 2
+    
+    sval  = "Test"
+    lval  = .true.
 
     call PMTM_parameter_output(PMTM_DEFAULT_INSTANCE, "Real Param", PMTM_OUTPUT_ALWAYS, .true., rval, err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
 
+    call PMTM_parameter_output(PMTM_DEFAULT_INSTANCE, "Real4 Param", PMTM_OUTPUT_ALWAYS, .true., r4val, err)
+    call ASSERTEQUAL(PMTM_SUCCESS, err)
+    
     call PMTM_parameter_output(PMTM_DEFAULT_INSTANCE, "Int Param", PMTM_OUTPUT_ALWAYS, .true., ival, err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
 
+    call PMTM_parameter_output(PMTM_DEFAULT_INSTANCE, "Int8 Param", PMTM_OUTPUT_ALWAYS, .true., i8val, err)
+    call ASSERTEQUAL(PMTM_SUCCESS, err)
+    
     call PMTM_parameter_output(PMTM_DEFAULT_INSTANCE, "Str Param", PMTM_OUTPUT_ALWAYS, .true., sval, err)
     call ASSERTEQUAL(PMTM_SUCCESS, err)
 
@@ -328,7 +437,12 @@ contains
   end subroutine test_parameter_output
 
 !------------------------------------------------------------------------------
-
+!> \section test_set_sample_mode
+!! Test for Fortran API of \ref PMTM_set_sample_mode
+!! @ingroup tests_fortran
+!! 
+!! Tests that calling \ref PMTM_set_sample_mode with valid options returns \c PMTM_SUCCESS
+!!
   subroutine test_set_sample_mode()
     integer :: err
     type(pmtm_timer) :: timer
@@ -347,7 +461,12 @@ contains
   end subroutine test_set_sample_mode
 
 !------------------------------------------------------------------------------
-
+!> \section test_get_error_message
+!! Test for Fortran API of \ref PMTM_get_error_message
+!! @ingroup tests_fortran
+!! 
+!! Tests that when \c PMTM generates an error (in this case when trying to initialise an instance that is already initialised) that \ref PMTM_get_error_message returns a non-zero length message.
+!!
   subroutine test_get_error_message()
     integer :: err
     character(len=1000) :: msg

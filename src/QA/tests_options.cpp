@@ -22,11 +22,12 @@ int main(int argc, char** argv)
 }
 
 /**
- * @test <b>\c tests_options.cpp/output_env</b>		Turn of the output environment options should stop the environment being output to the PMTM output file
- *
- * Tests \ref PMTM_set_option using the PMTM_OPTION_OUTPUT_ENV flag
+ * @ingroup tests_opts
+ * 
+ * Tests that setting \c PMTM_OPTION_OUTPUT_ENV to \c PMTM_FALSE using the \ref PMTM_set_option function stops the values of the Environment values being written to the output file.
+ * 
  */
-TEST_CASE( "tests_options.cpp/output_env", "Turn of the output environment options should stop the environment being output to the PMTM output file" )
+TEST_CASE( "tests_options.cpp/output_env", "Turning off the output environment options should stop the environment being output to the PMTM output file" )
 {
     char * wc_command = "grep -c \"^Environ\" *.pmtm";
     
@@ -67,9 +68,10 @@ TEST_CASE( "tests_options.cpp/output_env", "Turn of the output environment optio
 }
 
 /**
- * @test <b>\c tests_options.cpp/get_specific_runtime_variables</b>		Test whether putting a specific Environment variable name in ${PWD}/.pmtmrc prints it to the output, but only once
- *
- * Tests \ref PMTM_output_specific_runtime_variable when a variable is added to the .pmtmrc file
+ * @ingroup tests_opts
+ * 
+ * Tests that putting an environment variable name in a .pmtmrc file outputs the value of the environment variable to the output file during the call to \ref PMTM_init. Also, ensures that multiple calls to output the same variable only cause it to be written out once.
+ * 
  */
 TEST_CASE( "tests_options.cpp/get_specific_runtime_variables", "Test whether putting a specific Environment variable name in ${PWD}/.pmtmrc prints it to the output, but only once")
 {
@@ -119,9 +121,10 @@ TEST_CASE( "tests_options.cpp/get_specific_runtime_variables", "Test whether put
 }
 
 /**
- * @test <b>\c tests_options.cpp/get_specific_runtime_variables_internal</b>	Test whether PMTM_output_specific_runtime_variable prints out the variable's value to the output
- *
- * Tests \ref PMTM_output_specific_runtime_variable when called from within a host code
+ * @ingroup tests_opts
+ * 
+ * Tests that calling \ref PMTM_output_specific_runtime_variable within a code causes the value of the specified environment variable to be written to the output file.
+ * 
  */
 TEST_CASE( "tests_options.cpp/get_specific_runtime_variables_internal", "Test whether PMTM_output_specific_runtime_variable prints out the variable's value to the output")
 {
@@ -150,10 +153,10 @@ TEST_CASE( "tests_options.cpp/get_specific_runtime_variables_internal", "Test wh
 }
 
 /**
- * @test <b>\c tests_options.cpp/from_pmtmrc_file</b>		Test whether putting a option pair in either VARIABLE VALUE or VARIABLE=VALUE form in .pmtmrc file results in change to option
- *
- * Tests the use of \ref PMTM_set_option and also the internal option reader when a variable pair is set in a .pmtmrc file
- *
+ * @ingroup tests_opts
+ * 
+ * Tests that putting a valid option pair in either \c VARIABLE \c VALUE or \c VARIABLE=VALUE form in a .pmtmrc file causes \ref PMTM_set_option to be called and the value of the relevant option changed.
+ * 
  */
 TEST_CASE( "tests_options.cpp/from_pmtmrc_file", "Test whether putting a option pair in either VARIABLE VALUE or VARIABLE=VALUE form in .pmtmrc file results in change to option")
 {

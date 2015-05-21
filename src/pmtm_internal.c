@@ -716,7 +716,7 @@ PMTM_error_t get_specific_runtime_variables(const struct PMTM_instance * instanc
     return PMTM_SUCCESS;
 }
 
-PMTM_error_t output_specific_runtime_variable(const struct PMTM_instance * instance, char * envVar)
+PMTM_error_t output_specific_runtime_variable(const struct PMTM_instance * instance, const char * envVar)
 {
     char * envval = getenv(envVar);
     if (envval != NULL && strlen(envval) > 0 && instance->rank == IO_RANK) {
