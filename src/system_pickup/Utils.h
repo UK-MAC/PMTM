@@ -1,8 +1,7 @@
-/*
- * Utils.h
+/**
+ * @file Utils.h
+ * @author AWE Plc.
  *
- *  Created on: 1 Jul 2014
- *      Author: irm
  */
 #ifndef UTILS_H
 #define UTILS_H
@@ -17,15 +16,33 @@
 
 using namespace std ;
 
+/** @section utils_desc Utils Class
+* A utility class that contains a number of small methods to do common tasks
+*
+*/
 class Utils {
 public:
+  /** @name Constructors
+   * @{ */
 	Utils();
+  /** @} */
+  
+  /** @name Destructors
+   * @{ */
 	virtual ~Utils();
+  /** @} */
+
+  /** @name Utilities
+  * @{ */
 	static std::string get_system_string(const char * cmd, std::string& result,bool preserve = false);
 	static bool my_exists(const std::string& filename);
 	static bool stat_exists(const std::string& filename);
-//	std::string operator+ (std::string const &a, int b);
+  /** @} */
+
+  /** @name Sizes
+  * @{} */
 	static const int BUFF_SIZE = 128;
+  /** @} */
 };
 
 #endif /* UTILS_H */

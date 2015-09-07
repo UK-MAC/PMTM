@@ -1,14 +1,25 @@
 /*
- * Processor.cpp
+ * @file Processor.cpp
+ * @author AWE plc.
  *
- *  Created on: 10 Jul 2014
- *      Author: irm
+ *  
  */
 
 #include "Processor.h"
 
 using namespace std ;
 
+/** @section con_proc Processor()
+* Constructor for a Processor Object.
+*
+* The constructor does the bulk of the work in interrogating the Processor
+* and returns the Vendor, Name, Architecture, Clock speed, Cores and threads 
+* in the processor.
+*
+* @TODO Create parser for PowerPC
+* @TODO Figure out how to get information about attached devices such as GPUs
+*
+*/
 Processor::Processor() {
 	// TODO Auto-generated constructor stub
   
@@ -74,10 +85,19 @@ Processor::Processor() {
 
 }
 
+/**
+ * Destructor for OS class
+ */
 Processor::~Processor() {
 	// TODO Auto-generated destructor stub
 }
 
+
+/**
+ * @section printer_proc Processor Printer
+ * Method to print the information about the Processor to stdout
+ * 
+ */
 int Processor::printProcessorInfo(){
 	cout << "Processor Info - " << endl;
 	cout << "Vendor: " << procVendor << endl;
@@ -89,54 +109,74 @@ int Processor::printProcessorInfo(){
 	return 0;
 }
 
+/*****************************************************************************/
+/*****                             GETTERS                               *****/
+/*****************************************************************************/
+
+const std::string& Processor::getProcVendor() const {
+  return procVendor;
+}
+
+const std::string& Processor::getProcName() const {
+  return procName;
+}
+
 const std::string& Processor::getProcArch() const {
 	return procArch;
+}
+
+int Processor::getProcClock() const {
+  return procClock;
+}
+
+int Processor::getProcCores() const {
+  return procCores;
+}
+
+int Processor::getProcThreads() const {
+  return procThreads;
+}
+
+/*****************************************************************************/
+/*****                             SETTERS                               *****/
+/*****************************************************************************/
+
+void Processor::setProcVendor(const std::string& procVendor) {
+  this->procVendor = procVendor;
+}
+
+void Processor::setProcName(const std::string& procName) {
+  this->procName = procName;
 }
 
 void Processor::setProcArch(const std::string& procArch) {
 	this->procArch = procArch;
 }
 
-int Processor::getProcClock() const {
-	return procClock;
-}
-
 void Processor::setProcClock(int procClock) {
 	this->procClock = procClock;
-}
-
-int Processor::getProcCores() const {
-	return procCores;
 }
 
 void Processor::setProcCores(int procCores) {
 	this->procCores = procCores;
 }
 
-const std::string& Processor::getProcName() const {
-	return procName;
-}
-
-void Processor::setProcName(const std::string& procName) {
-	this->procName = procName;
-}
-
-int Processor::getProcThreads() const {
-	return procThreads;
-}
-
 void Processor::setProcThreads(int procThreads) {
 	this->procThreads = procThreads;
 }
 
-const std::string& Processor::getProcVendor() const {
-	return procVendor;
-}
-
-void Processor::setProcVendor(const std::string& procVendor) {
-	this->procVendor = procVendor;
-}
-
+/**
+* @section c_interface_proc C Interface to Processor
+* This method is callable by C programs and returns the Various Processor information
+*
+* @param myProcVendor   Pointer to container for Vendor of Processor
+* @param myProcName     Pointer to container for Name of Processor
+* @param myProcArch     Pointer to container for the Architecture of Processor
+* @param myProcClock    Pointer to container for Clock speed of Processor
+* @param myProcCores    Pointer to container for number of physical cores on Processor
+* @param myProcThreads  Pointer to container for number of threads on a core
+*
+*/
 void getProcInfo(char* myProcVendor, char* myProcName, char* myProcArch, int* myProcClock, int* myProcCores, int* myProcThreads){
   std::string vendor, name, arch;
   Processor tmpProc;

@@ -1,8 +1,9 @@
-/*
- * Utils.cpp
+/**
+ * @file Utils.cpp
+ * @author AWE Plc.
  *
- *  Created on: 1 Jul 2014
- *      Author: irm
+ *  This file defines a number of utilities that are commonly used within the auto
+ * system checker
  */
 
 #include "Utils.h"
@@ -20,6 +21,14 @@ Utils::~Utils() {
 }
 
 // Command to extract a string from the result of a system command
+/** @section extract_string String Extractor
+* Utility to return a string from a command run outside the program on the command line
+*
+* @param com 		The command to run outside the program
+* @param preserve	Indicator of whether to preserve endlines 
+* @return result	The output from the command
+*
+*/
 std::string Utils::get_system_string(const char* cmd, std::string& result,bool preserve) {
 	// Open a pipe to POSIX compliant command line and execute cmd
 	// *NIX only at the moment
@@ -44,20 +53,24 @@ std::string Utils::get_system_string(const char* cmd, std::string& result,bool p
 	return result;
 }
 
+/** @section my_exists
+* Utility to discover whether a file exists or not
+*
+* @param filename	Name of file to check 
+*
+*/
 bool Utils::my_exists(const std::string& filename){
 	ifstream file(filename.c_str());
 	return file;
 }
 
+/** @section stat_exists
+* Utility to discover whether a file exists or not
+*
+* @param filename	Name of the file to check
+*/
 bool Utils::stat_exists(const std::string& filename){
 	struct stat buf;
 	return (stat(filename.c_str(), &buf)==0);
 }
-
-//template<class T>
-//std::string operator+ (std::string const &a, const T &b){
-//	std::ostringstream oss;
-//	oss << a << b;
-//	return oss.str();
-//}
 

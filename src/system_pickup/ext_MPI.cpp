@@ -1,14 +1,30 @@
 /*
- * MPI.cpp
+ * @file ext_MPI.cpp
+ * @author AWE Plc.
  *
- *  Created on: 2 Jul 2014
- *      Author: irm
  */
 
 #include "ext_MPI.h"
 
 using namespace std ;
 
+/**
+* @section con_mpi ext_MPI()
+* Constructor for an MPI object.
+*
+* The constructor does the bulk of the work in interrogating the MPI
+* and returns the Vendor, Name, Version and Standard.
+*
+* If the standard is MPI 3 or greater it uses the MPI_Get_library_version
+* to get the version string.
+*
+* If the standard is MPI 2.2 or less it either uses a implementation specific
+* utility or mpirun (or equivalent) to get the string.
+* 
+* Once the string is obtained then the constructor parses it to get the relevant 
+* information.
+*
+*/
 ext_MPI::ext_MPI() {
 	// TODO Auto-generated constructor stub
 
@@ -40,6 +56,8 @@ ext_MPI::ext_MPI() {
 	std::string mpv, mpv2,ompi,impi,mpt;
 	bool mpvf,mpv2f,ompif,impif,mptf;
 	
+	// Get the MPI Home directory by finding out where the compiler is housed
+	// Probably not valid for Cray MPI
 	Utils::get_system_string("which mpicxx", tempStr);
 	tempStr.erase(tempStr.length()-7,7);
 	
@@ -48,12 +66,14 @@ ext_MPI::ext_MPI() {
 	ompif = false;
 	impif = false;
 	
+	// Find the possible locations of MPI utility
 	mpv = tempStr + "mpichversion";
 	mpv2 = tempStr + "mpich2version";
 	ompi = tempStr + "ompi_info";
 // 	impi = tempStr + "cpuinfo";
 	mpt = tempStr + "mpiexec_mpt";
 			
+	// Figure out if any of the utilities exist
 	mpvf = Utils::stat_exists(mpv);
 	mpv2f = Utils::stat_exists(mpv2);
 	ompif = Utils::stat_exists(ompi);
@@ -80,6 +100,7 @@ ext_MPI::ext_MPI() {
 #ifdef __AIX__
 	//else if( do stuff with lslpp -l ppe.poe
 #endif
+	// If no utility works use mpirun. Still not valid for Cray
 	else{
 	  Utils::get_system_string("mpirun -V",libstring, true);
 	}
@@ -93,8 +114,9 @@ ext_MPI::ext_MPI() {
 	  libstream.str(libstring);
 
 #endif
-	  
-          libstream >> tempStr;
+	  // We now have the string, so lets parse it
+      libstream >> tempStr;
+
 	  while(libstream){
 	  	  
 	  if(tempStr.compare("MPICH")==0 || tempStr.compare("MPICH2")==0 || tempStr.compare("MVAPICH2")==0){
@@ -186,10 +208,18 @@ ext_MPI::ext_MPI() {
 	}
 }
 
+/**
+ * Destructor for ext_MPI class
+ */
 ext_MPI::~ext_MPI() {
 	// TODO Auto-generated destructor stub
 }
 
+/**
+ * @section printer_mpi MPI Printer
+ * Method to print the information about the MPI to stdout
+ * 
+ */
 int ext_MPI::printMPIInfo() {
 
 	cout << "MPI Info - " << endl;
@@ -201,38 +231,58 @@ int ext_MPI::printMPIInfo() {
 	return 0;
 }
 
+/*****************************************************************************/
+/*****                             GETTERS                               *****/
+/*****************************************************************************/
+
+
 const std::string& ext_MPI::getMpiName() const {
 	return mpiName;
-}
-
-void ext_MPI::setMpiName(const std::string& mpiName) {
-	this->mpiName = mpiName;
 }
 
 const std::string& ext_MPI::getMpiVendor() const {
 	return mpiVendor;
 }
 
-void ext_MPI::setMpiVendor(const std::string& mpiVendor) {
-	this->mpiVendor = mpiVendor;
-}
-
 const std::string& ext_MPI::getMpiVersion() const {
 	return mpiVersion;
-}
-
-void ext_MPI::setMpiVersion(const std::string& mpiVersion) {
-	this->mpiVersion = mpiVersion;
 }
 
 const std::string& ext_MPI::getMpiStandard() const {
   return mpiStandard;
 }
 
+/*****************************************************************************/
+/*****                             SETTERS                               *****/
+/*****************************************************************************/
+
+
+void ext_MPI::setMpiName(const std::string& mpiName) {
+	this->mpiName = mpiName;
+}
+
+void ext_MPI::setMpiVendor(const std::string& mpiVendor) {
+	this->mpiVendor = mpiVendor;
+}
+
+void ext_MPI::setMpiVersion(const std::string& mpiVersion) {
+	this->mpiVersion = mpiVersion;
+}
+
 void ext_MPI::setMpiStandard(const std::string& mpiStandard) {
   this->mpiStandard = mpiStandard;
 }
 
+/**
+* @section c_interface_mpi C Interface to ext_MPI
+* This method is callable by C programs and returns the various MPI information
+*
+* @param myMpiVendor	Pointer to container for Vendor of MPI
+* @param myMpiName		Pointer to container for Name of MPI
+* @param myMpiVersion	Pointer to container for Version number of MPI
+* @param myMpiStandard	Pointer to container for Standard the MPI adheres to
+*
+*/
 void getMpiInfo(char* myMpiVendor, char* myMpiName, char* myMpiVersion, char* myMpiStandard) {
     std::string vendor, name, version, standard;
     ext_MPI tmpMPI;

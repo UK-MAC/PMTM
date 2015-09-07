@@ -9,6 +9,19 @@
 
 using namespace std ;
 
+/**
+* @section con_compiler Compiler()
+* Constructor for a Compiler object.
+* 
+* The constructor does the bulk of the work in interrogating the compiler 
+* and returns the Vendor, Name and Version.
+* 
+* Currently, it uses pre-defined macros to determine which compiler is being
+* used. This is no different to how it is confirmed in the Makefile but the only
+* way I can see to get info at runtime is to assume that the compilers are loaded
+* then it may be able to get version info.
+*
+*/
 Compiler::Compiler() {
 	// TODO Auto-generated constructor stub
 #define QUOTE(X) QUOTE_(X)
@@ -54,10 +67,18 @@ Compiler::Compiler() {
 	compilerVersion = COMPILER_VERSION;
 }
 
+/**
+ * Destructor for Compiler class
+ */
 Compiler::~Compiler() {
 	// TODO Auto-generated destructor stub
 }
 
+/**
+ * @section printer_comp Compiler Printer
+ * Method to print the information about the Compiler to stdout
+ * 
+ */
 int Compiler::printCompilerInfo() {
 
 	cout << "Compiler Info - " << endl;
@@ -68,29 +89,47 @@ int Compiler::printCompilerInfo() {
 	return 0;
 }
 
+/*****************************************************************************/
+/*****                             GETTERS                               *****/
+/*****************************************************************************/
+
 const std::string& Compiler::getCompilerName() const {
 	return compilerName;
-}
-
-void Compiler::setCompilerName(const std::string& compilerName) {
-	this->compilerName = compilerName;
 }
 
 const std::string& Compiler::getCompilerVendor() const {
 	return compilerVendor;
 }
 
-void Compiler::setCompilerVendor(const std::string& compilerVendor) {
-	this->compilerVendor = compilerVendor;
-}
-
 const std::string& Compiler::getCompilerVersion() const {
 	return compilerVersion;
+}
+
+/*****************************************************************************/
+/*****                             SETTERS                               *****/
+/*****************************************************************************/
+
+void Compiler::setCompilerName(const std::string& compilerName) {
+	this->compilerName = compilerName;
+}
+
+void Compiler::setCompilerVendor(const std::string& compilerVendor) {
+	this->compilerVendor = compilerVendor;
 }
 
 void Compiler::setCompilerVersion(const std::string& compilerVersion) {
 	this->compilerVersion = compilerVersion;
 }
+
+/**
+* @section c_interface_comp C Interface to Compiler
+* This method is callable by C programs and returns the various Compiler information
+*
+* @param myCompVendor	Pointer to container for Vendor of Compiler
+* @param myCompName		Pointer to container for Name of Compiler
+* @param myCompVersion	Pointer to container for Version of Compiler
+*
+*/
 
 void getCompInfo(char* myCompVendor, char* myCompName, char* myCompVersion){
     std::string vendor, name, version;
