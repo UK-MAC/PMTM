@@ -13,6 +13,11 @@
 #include "pmtm_internal.h"
 #include "pmtm_defines.h"
 
+#include "system_pickup/OS.h"
+#include "system_pickup/Processor.h"
+#include "system_pickup/Compiler.h"
+#include "system_pickup/ext_MPI.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -171,6 +176,8 @@ PMTM_error_t set_option(PMTM_option_t option, PMTM_BOOL value)
  *
  * @param option [IN] The option to set.
  * @param value  [IN] The value to set for the option.
+ * 
+ * @TODO Actually create working code
  */
 /*PMTM_error_t get_option(PMTM_option_t option)
 {
@@ -190,12 +197,12 @@ PMTM_error_t set_option(PMTM_option_t option, PMTM_BOOL value)
 /**
  * Set PMTM_DATA_STORE_INTERNAL.
  *
- * @param store    [IN] The value to set PMTM_DATA_STORE_INTERNAL to
+ * @TODO Create methodL
  */
-// PMTM_error_t set_pmtm_data_store(char * store)
-// {
-//   
-// }
+/*PMTM_error_t set_pmtm_data_store(char * store)
+{
+  
+}*/
 
 /**
  * Allocated the required memory and copy the data from source into *dest. This
@@ -440,6 +447,7 @@ PMTM_error_t write_file_header(struct PMTM_instance * instance)
     struct tm * tm_ptr = localtime(&timer);
 
     const uint string_len = 20;
+    const uint pickup_string_len = 200;
     char date_string[string_len];
     char time_string[string_len];
     char id_string[string_len];
@@ -457,14 +465,77 @@ PMTM_error_t write_file_header(struct PMTM_instance * instance)
 #else
     fprintf(fid, "Max OpenMP Threads, =, 1\n");
 #endif
+  
     fprintf(fid, "Machine, =, %s, %s\n", QUOTE(MACHINE_VENDOR), QUOTE(MACHINE_NAME));
-    fprintf(fid, "Processor, =, %s, %s, %s, %s, %s, %s\n", QUOTE(PROC_VENDOR), QUOTE(PROC_NAME),
-           QUOTE(PROC_ARCH), QUOTE(PROC_CLOCK), QUOTE(PROC_CORES), QUOTE(PROC_THREADS));
-    fprintf(fid, "OS, =, %s, %s, %s, %s\n", QUOTE(SYSTEM_VENDOR), QUOTE(SYSTEM_NAME), QUOTE(SYSTEM_VERSION), QUOTE(SYSTEM_KERNEL));
-    /* Compiler type detected in versions.h */
-    fprintf(fid, "Compiler, =, %s, %s, %s\n", COMPILER_VENDOR, COMPILER_NAME, COMPILER_VERSION);
+    
+    
+    /*
+     * The below sections have been changed to use the System Pickup routines.
+     * I have commented out the original lines that use the information from the Makefile.
+     * 
+     * In the future it might be prudent to do a check between what is set and what is used
+     * 
+     * Also, it may be a good idea to print the originals as parameters at a later date.
+     *
+     */  
+    
+    /*
+     * The Processor statistics
+     * 
+     * fprintf(fid, "Processor, =, %s, %s, %s, %s, %s, %s\n", QUOTE(PROC_VENDOR), QUOTE(PROC_NAME),
+     *       QUOTE(PROC_ARCH), QUOTE(PROC_CLOCK), QUOTE(PROC_CORES), QUOTE(PROC_THREADS));
+     *
+     */
+    char procVendor[pickup_string_len],procName[pickup_string_len],procArch[pickup_string_len];
+    int procClock,procCores,procThreads;
+    
+    getProcInfo(procVendor,procName,procArch,&procClock,&procCores,&procThreads);
+    
+    fprintf(fid, "Processor, =, %s, %s, %s, %d, %d, %d\n", procVendor, procName, procArch, procClock, procCores, procThreads);
+    
+    /*
+     * The Operating System statistics
+     *  
+     * fprintf(fid, "OS, =, %s, %s, %s, %s\n", QUOTE(SYSTEM_VENDOR), QUOTE(SYSTEM_NAME), QUOTE(SYSTEM_VERSION), QUOTE(SYSTE*M_KERNEL));
+     * 
+     */
+    char osVendor[pickup_string_len],osName[pickup_string_len],osVersion[pickup_string_len],osKernel[pickup_string_len],osNode[pickup_string_len];  
+    
+    getOSInfo(osVendor,osName,osVersion,osKernel,osNode);
+    
+    fprintf(fid, "OS, =, %s, %s, %s, %s\n", osVendor, osName, osVersion, osKernel);
+    
+    /*
+     * The Compiler statistics
+     * 
+     * It may well be that this is duplicated code as the Compiler class does more or less the 
+     * same thing as versions.h but it gives us scope for changing the compiler method if a better 
+     * way is found (maybe calling icc -V or gcc -v and parsing the output - but this assumes that
+     * a module or some such is needed to run the binary)
+     * /* Compiler type detected in versions.h 
+     * 
+     * fprintf(fid, "Compiler, =, %s, %s, %s\n", COMPILER_VENDOR, COMPILER_NAME, COMPILER_VERSION);
+     * 
+     */
+     char compVendor[pickup_string_len], compName[pickup_string_len], compVersion[pickup_string_len];
+     
+     getCompInfo(compVendor,compName,compVersion);
+     
+     fprintf(fid, "Compiler, =, %s, %s, %s\n", compVendor, compName, compVersion);
+     
 #ifndef SERIAL
-    fprintf(fid, "MPI, =, %s, %s, %s\n", QUOTE(MPI_VENDOR), QUOTE(MPI_NAME), QUOTE(MPI_LIB_VER));
+     /*
+      * The MPI statistics
+      * 
+      * fprintf(fid, "MPI, =, %s, %s, %s\n", QUOTE(MPI_VENDOR), QUOTE(MPI_NAME), QUOTE(MPI_LIB_VER));
+      * 
+      */
+     char mpiVendor[pickup_string_len],mpiName[pickup_string_len],mpiVersion[pickup_string_len],mpiStandard[pickup_string_len];
+     
+     getMpiInfo(mpiVendor,mpiName,mpiVersion,mpiStandard);
+     
+     fprintf(fid, "MPI, =, %s, %s, %s\n", mpiVendor, mpiName, mpiVersion);
+     
 #else
     fprintf(fid, "MPI, =, %s\n", "Serial");
 #endif

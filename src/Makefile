@@ -47,7 +47,12 @@ LIB_NAME_OMP   = PMTM_openmp
 
 FULL_LIB_NAME  = $(PMTM_LIBDIR)/lib$(LIB_NAME).a
 
-LIB_OBJS    = $(FULL_BUILD_DIR)/pmtm.o \
+LIB_OBJS    = $(FULL_BUILD_DIR)/system_pickup/Utils.o \
+	      $(FULL_BUILD_DIR)/system_pickup/Compiler.o \
+	      $(FULL_BUILD_DIR)/system_pickup/ext_MPI.o \
+	      $(FULL_BUILD_DIR)/system_pickup/OS.o \
+	      $(FULL_BUILD_DIR)/system_pickup/Processor.o \
+	      $(FULL_BUILD_DIR)/pmtm.o \
               $(FULL_BUILD_DIR)/pmtm_internal.o \
               $(FULL_BUILD_DIR)/pmtm_timer_output.o \
               $(FULL_BUILD_DIR)/PMTM.o \
@@ -106,7 +111,7 @@ SYS_DEFS  = $(CDEF)SYSTEM_VENDOR=$(PMTM_OS_VENDOR) \
             $(CDEF)SYSTEM_KERNEL=$(PMTM_OS_KERNEL)
 
 FFLAGS   += $(FFPIC) 
-CFLAGS   += $(CFPIC) -g $(F2C_INC) $(CDEF)$(F2C_OPT) $(INC).\
+CFLAGS   += $(CFPIC) -g $(F2C_INC) $(CDEF)$(F2C_OPT) $(INC). $(INC)/system_pickup \
             $(MCH_DEFS) $(PROC_DEFS) $(COMP_DEFS) $(MPI_DEFS) $(SYS_DEFS)
 
 ifdef HPC_MPI="serial"
@@ -117,7 +122,7 @@ endif
 ifdef PMTM_HW_COUNTERS
   CFLAGS += $(CDEF)HW_COUNTERS $(LIB)papi
 endif
-CXXFLAGS += $(INC)catch -g -O0
+CXXFLAGS += $(INC)catch $(INC)system_pickup -g -O0
 
 ifndef MPIRUN
   MPIRUN=mpirun.awe
@@ -229,6 +234,7 @@ endif
 $(FULL_BUILD_DIR):
 	@ echo "Creating build directory"
 	@-mkdir -p $(FULL_BUILD_DIR)
+	@-mkdir -p $(FULL_BUILD_DIR)/system_pickup
 	@-mkdir -p $(FULL_BUILD_DIR)/examples
 	@-mkdir -p $(FULL_BUILD_DIR)/QA
 
@@ -311,7 +317,7 @@ $(FULL_BUILD_DIR)/QA/ftests.x: QA/tests.F90
 	cpp -P $(PFUNIT_DIR)/include/driver.F90 -I$(FULL_BUILD_DIR) -I$(PFUNIT_DIR)/include -DHAS_CONCATENATION_OPERATOR \
 		> $(FULL_BUILD_DIR)/driver.f90
 	$(MPIFC) $(FFLAGS) -o $@ $(FULL_BUILD_DIR)/driver.f90 $(FULL_BUILD_DIR)/tests.o $(FULL_BUILD_DIR)/tests_wrap.o \
-		-I$(PMTM_INCDIR) -I$(PFUNIT_DIR)/mod -L$(PMTM_LIBDIR) -l$(LIB_NAME) -L$(PFUNIT_DIR)/lib -lpfunit -lrt
+		-I$(PMTM_INCDIR) -I$(PFUNIT_DIR)/mod -L$(PMTM_LIBDIR) -l$(LIB_NAME) -L$(PFUNIT_DIR)/lib -lpfunit -lstdc++ -lrt
 
 $(FULL_BUILD_DIR)/pmtm.mod: $(FULL_BUILD_DIR)/PMTM.o
 
@@ -338,6 +344,15 @@ $(FULL_BUILD_DIR)/%_pic.o: %.c
 
 $(FULL_BUILD_DIR)/%.o: %.c
 	$(MPICC) $(CFLAGS) -o $@ -c $<
+	
+$(FULL_BUILD_DIR)/%_picomp.o: %.cpp
+	$(MPICXX) $(CXXOPENMP) $(CXXFPIC) $(CXXFLAGS) -o $@ -c $<
+
+$(FULL_BUILD_DIR)/%_omp.o: %.cpp
+	$(MPICXX) $(CXXOPENMP) $(CXXFLAGS) -o $@ -c $<
+
+$(FULL_BUILD_DIR)/%_pic.o: %.cpp
+	$(MPICXX) $(CXXFPIC) $(CXXFLAGS) -o $@ -c $<
 
 $(FULL_BUILD_DIR)/%.o: %.cpp
 	$(MPICXX) $(CFLAGS) $(CXXFLAGS) -o $@ -c $<

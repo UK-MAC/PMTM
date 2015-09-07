@@ -297,7 +297,6 @@ end subroutine PMTM_set_file_name
 !! @param variable_name The Environment Variable to output to file
 !! @param err_code <b>(FORTRAN Only)</b> Will be set to \c PMTM_SUCCESS if the call was successful and the appropriate \ref Error if not.
 !!
-!! @test <b>\c tests_options.cpp/get_specific_runtime_variables</b>     Test whether putting a specific Environment variable name in ${PWD}/.pmtmrc prints it to the output, but only once
 !! @test <b>\c tests_options.cpp/get_specific_runtime_variables_internal</b>    Test whether PMTM_output_specific_runtime_variable prints out the variable's value to the output
 !!
 subroutine PMTM_output_specific_runtime_variable(instance, variable_name, err_code)

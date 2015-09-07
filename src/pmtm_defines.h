@@ -39,12 +39,15 @@
 #define INTERNAL__OPTION_OUTPUT_ENV 1
 #define INTERNAL__OPTION_NO_LOCAL_COPY 2
 #define INTERNAL__OPTION_NO_STORED_COPY 3
-/*#define PMTM_OPTION_OUTPUT_ENV INTERNAL__OPTION_OUTPUT_ENV
-#define PMTM_OPTION_NO_LOCAL_COPY INTERNAL__OPTION_NO_LOCAL_COPY
-#define PMTM_OPTION_NO_STORED_COPY INTERNAL__OPTION_NO_STORED_COPY*/
 
 #define INTERNAL__NO_MAX 2147483647
 
+/* 
+ * 
+ * This is currently true for Linux. Unlikely to work for other OS's 
+ * particularly Windows.
+ * 
+ */
 #define INTERNAL__RCFILENAME "/.pmtmrc"
 
 #endif	/* _PMTM_INCLUDE_PMTM_DEFINES_H */
